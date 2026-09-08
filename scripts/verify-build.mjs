@@ -1,0 +1,17 @@
+import { readFile, readdir } from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const manifest = JSON.parse(await readFile(new URL('../dist/manifest.json', import.meta.url), 'utf8'));
+assert.equal(manifest.manifest_version, 3);
+assert.deepEqual(manifest.permissions ?? [], []);
+assert.deepEqual(manifest.host_permissions ?? [], []);
+assert.equal(manifest.content_scripts.length, 2);
+for (const entry of manifest.content_scripts) assert.deepEqual(entry.matches, ['https://chatgpt.com/*']);
+const main = manifest.content_scripts.find((entry) => entry.world === 'MAIN');
+assert.equal(main?.run_at, 'document_start');
+assert.equal(main?.js.length, 1);
+const hook = await readFile(new URL(`../dist/${main.js[0]}`, import.meta.url), 'utf8');
+assert(!/\bimport\s*(?:\(|\{|\*)/.test(hook), 'MAIN hook must not use an async/import loader');
+assert(hook.includes('conversation-navigator:v1'), 'MAIN hook must contain the bridge directly');
+for (const asset of manifest.web_accessible_resources ?? []) assert.deepEqual(asset.matches, ['https://chatgpt.com/*']);
+assert(!(await readdir(new URL('../dist', import.meta.url))).includes('tests'));
+console.log('Verified MV3 package: ChatGPT-only, zero permissions, standalone early MAIN hook.');

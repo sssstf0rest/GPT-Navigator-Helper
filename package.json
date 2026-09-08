@@ -1,0 +1,27 @@
+{
+  "name": "chatgpt-conversation-navigator",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build && node scripts/verify-build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "npm run build && playwright test",
+    "check": "npm run test && npm run test:e2e",
+    "fixture": "node tests/fixture/server.mjs"
+  },
+  "devDependencies": {
+    "@crxjs/vite-plugin": "2.7.1",
+    "@playwright/test": "1.63.0",
+    "@types/chrome": "0.2.9",
+    "@types/node": "26.5.0",
+    "typescript": "7.0.2",
+    "vite": "8.2.2",
+    "vitest": "5.0.0"
+  }
+}

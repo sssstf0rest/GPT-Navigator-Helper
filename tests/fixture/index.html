@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Conversation Navigator · controlled browser fixture</title>
+  <script>
+    const fixtureId = location.pathname.split('/').filter(Boolean).at(-1) || 'fixture-a';
+    const fixturePath = new URLSearchParams(location.search).has('dom') ? '/fixture/history/' : '/backend-api/conversation/';
+    // Intentionally fetch before body/module execution: tests the real document_start hook.
+    window.initialHistory = fetch(fixturePath + fixtureId + location.search).then(response => response.json());
+  </script>
+  <style>
+    * { box-sizing: border-box; } body { margin: 0; background: #fefefd; color: #292d29; font: 15px/1.7 'Helvetica Neue', sans-serif; }
+    header { height: 64px; display: flex; align-items: center; gap: 12px; padding: 0 32px; border-bottom: 1px solid #e6e6e0; }
+    .brand { font-family: Georgia, serif; font-size: 20px; } .badge { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: #7c8278; }
+    main { position: fixed; top: 80px; bottom: 90px; left: 7%; width: min(790px, 64vw); overflow: auto; overflow-anchor: none; scrollbar-width: thin; }
+    #timeline { position: relative; }
+    article { position: absolute; left: 0; width: 100%; padding: 16px 36px; overflow: hidden; }
+    [data-message-author-role=user] { background: #f0f1ec; border-radius: 16px; padding: 14px 20px; margin-left: 10%; }
+    [data-message-author-role=assistant] { padding: 14px 8px; }
+    .response-note { color: #747c71; margin: 22px 0; font-size: 13px; }
+    footer { position: fixed; bottom: 22px; left: 10%; width: min(700px, 56vw); padding: 13px 20px; border: 1px solid #e1e4dc; border-radius: 24px; font-size: 12px; color: #7c8278; background: #f8f9f5; }
+    button { font: inherit; font-size: 12px; padding: 4px 12px; background: transparent; border: 1px solid #d6dbcf; border-radius: 14px; cursor: pointer; }
+    @media (max-width: 700px) { main { left: 2%; width: 96%; } .badge { display: none; } }
+  </style>
+</head>
+<body>
+  <header><span class="brand">A conversation, in perspective.</span><span class="badge">Local test fixture · no ChatGPT requests</span></header>
+  <main aria-label="Conversation"><div id="timeline"></div></main>
+  <footer>This is a controlled test conversation. Nothing here is sent to ChatGPT.</footer>
+  <script type="module" src="/fixture.js"></script>
+</body>
+</html>
