@@ -62,3 +62,17 @@ The user requested a feasibility assessment and best development methodology. In
 - Implemented and regression-tested passive cursor-linked flat-page merging, observational live-tail extension, explicit-ID precedence over reused wrappers, and preservation of full captured prompt text when the DOM preview is truncated.
 - Visibility verification now also uses Element.checkVisibility with opacity, visibility, and content-visibility checks before viewport geometry/hit-testing: https://developer.mozilla.org/en-US/docs/Web/API/Element/checkVisibility .
 - Initial UI screenshots inspected at light, dark, and narrow layouts. Sidebar is self-contained; narrow layout starts collapsed.
+
+## Live failing-tab inspection (2026-09-08)
+- User authorized their existing Chrome tabs; native CUA works after permission. Browser-runtime Chrome connection remains unavailable; these are separate capabilities.
+- LLM Terms: history complete, 1 batch, 27 messages, 4 prompts, 0 native controls, 0 visible controls, 1470 × 802. VPN conversation: same except 89 messages. No request issue, no pending requests.
+- UI is Chinese. English-only Prompt N detector may miss localization, but a screenshot of LLM Terms also shows no visible native rail.
+- Four observed prompts may explain eligibility, but the native minimum and whether count is accurate remain unverified. Do not assert a threshold based on community reports.
+
+- Downloaded observed public ChatGPT JavaScript URLs without credentials (HTTP 200). Source `conversation-small-owrec55n6vm0ekcc.js` function qva counts user turns and requires >=5, rejecting automation-authored user turns. Main component K7n calls this predicate as a mandatory rail render gate. This establishes a five-turn minimum for this captured build, replacing the earlier unverified six-prompt hypothesis.
+- Native lazy module `5ff8b827-b1fkqq61n6dz49v3.js` uses hardcoded fallback Prompt N; Chinese UI alone does not establish a detection failure.
+- Reproduced helper failure on LLM Terms. Manual scroll to the true first visible prompt leaves the native rail absent and captured metadata unchanged.
+
+- FINAL live confirmation: both ChatGPT selected histories contain exactly 4 user turns; native turn predicate returns false; older cursor absent; no loading. Queried existing read-only selectors and predicate, independently of extension counters. Five-turn native gate explains both failures.
+- Native width requirement in captured source is >=1024 CSS px plus hover; original full-width tabs were 1470px. Widen-window advice is not an appropriate diagnosis here.
+- Complete report: output/native-investigation/live-failure-findings.md. No extension source changes; native always-visible capability is not achievable through loading alone.

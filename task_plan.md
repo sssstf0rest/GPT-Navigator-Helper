@@ -1,3 +1,22 @@
+# Live native helper investigation
+
+## Current objective
+Diagnose and fix the user-reported missing native navigator on the existing helper branch, using the two authorized open Chrome conversations. Preserve main. Do not infer live compatibility from the fixture.
+
+## Current phases
+1. Read live diagnostics and distinguish missing controls from a detector failure — complete.
+2. Verify root cause against live page behavior and source; select a bounded remedy — complete: both live host states contain four user turns, fail the native five-turn predicate, and have no older cursor.
+3. Implement justified fixes and regression cases — deferred beyond this verification: loading cannot overcome the verified host gate. Source was not changed during the user's computer-access check.
+4. Report actual capabilities and limits — complete: detailed evidence in output/native-investigation/live-failure-findings.md.
+
+## New evidence
+- Native Computer Use permission works. Both provided Chrome tabs are accessible.
+- Both report complete history, one observed batch, four observed user prompts, zero detected native controls, viewport 1470 × 802, and a two-second Prepare run.
+- The two tabs report 27 and 89 total messages, respectively. UI is Chinese; detector currently recognizes English Prompt N labels only.
+- LLM Terms screenshot confirms no visible rail. Need determine whether four prompts is the true selected history count or capture/counting error, and inspect native display conditions.
+
+---
+
 # Native navigator helper implementation
 
 ## Current objective

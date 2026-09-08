@@ -44,3 +44,10 @@
 - Created README.md and COMPATIBILITY.md with installation, architecture, verified behaviors, current limits, and the open authenticated live gate.
 - Packaged and integrity-checked output/releases/conversation-navigator-0.1.0.zip with SHA-256 checksum.
 - No user-profile extension installation, live conversation access, new ChatGPT prompts, external upload, commit, or publication was performed.
+
+## Live bug investigation
+- Resumed after user reported missing navigator. Read both failing tabs via authorized native CUA and expanded diagnostics; inspected LLM Terms screenshot.
+- Starting independent read-only source audit while investigating live display conditions. No extension implementation edits yet.
+- Independent public-client-source audit found current five-user-turn minimum plus mode/layout/history gates. Verifying actual live host turn counts via existing module read-only selectors. No host state changes or new prompts sent.
+- Completed live checks on both supplied tabs: actual user turns=4, native predicate=false, older cursor absent, no loading. Reproduced Prepare failure in both and manual first-prompt scroll in LLM Terms.
+- Closed DevTools and returned LLM Terms to recent messages. Saved source-backed report and public asset hashes. No extension source edits or new build in this verification; report explicitly distinguishes diagnosis from a fix.
