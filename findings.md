@@ -1,5 +1,15 @@
 # Findings
 
+## Native helper implementation, 2026-09-08
+- Research is recorded in output/native-investigation/native-navigator-feasibility.md. User approved implementing it on a new branch.
+- Main is preserved at daa709a. New branch: codex/native-navigator-helper.
+- Existing tests assume all fixture turns are present at initialization; replace the active browser suite with genuine host-owned sequential pagination, delayed network responses, changing heights, and native controls that only mount after history completion.
+- Larger host request batches will apply only while Prepare is active. The hook will track a linked pagination chain and avoid claiming complete history for unlinked or unrecognized pages.
+- Reading-position restoration will save a stable message anchor and distance from the loaded bottom, then verify/correct after host remount; no search for arbitrary prompts.
+- New tests establish bounded progress waits, interruption, host batch caps, route/branch replacement, native absence/hidden state, and recoverable errors. The native component is checked again after restoring the reading position.
+- Live host behavior remains unverified; all browser results use the production extension with a local paginated/virtualized host. No shared links, authenticated data exports, new prompts, or account changes were used.
+- Final validation passed 16 unit and 18 browser cases, including 501 prompts/oversized answers and native visibility loss after restoration. Prepared version 0.2.0 as a dedicated unpacked folder and ZIP for the user to try.
+
 ## Supplied prompt
 - Objective: MV3, local-only ChatGPT user-prompt navigator with complete history, stable identity, and verified navigation to unmounted prompts.
 - Sound foundations: index independent of DOM, stable IDs, scroll-container detection, source adapters, route lifecycle, jump verification.

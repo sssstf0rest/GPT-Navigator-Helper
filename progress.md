@@ -1,5 +1,18 @@
 # Progress
 
+## Native helper implementation
+- User approved the native helper and requested a new branch. Created codex/native-navigator-helper from clean main at daa709a.
+- Read existing scaffold, fixtures, build checks, and investigation. Asked for a live conversation URL while proceeding locally.
+- Applying the planning-with-files pattern and Playwright skill. Retaining prior development history below.
+- Implemented the metadata-only hook, linked pagination, active batch expansion, bounded edge loader, native detection, reading-anchor restoration, and compact UI. Removed the old custom outline and jump implementation from this branch; main preserves it.
+- Initial browser run passed 13/15 tests and exposed a bridge acknowledgement race plus an overly strict fixture jump assertion. Fixed the race and replaced the assertion with viewport/hit testing; 15/15 then passed.
+- Final code review added transient failure recovery and native visibility rechecking after restoration. Full check passed 16 unit tests and 16 browser tests (about 65 seconds), including an unresponsive edge with no repeated movement.
+- Visually inspected the fixture screenshots in light/dark themes. Added final cases for a 501-prompt oversized-answer anchor and a native component disappearing after return, to cover remaining restoration concerns.
+- Updated README/COMPATIBILITY for manual installation and the still-open live gate. No authenticated conversation has been provided. A trial package and local branch commit are the remaining deliverables.
+- Final `npm run check` passed 16 unit tests and 18 production-extension browser tests (about 1.2 minutes), plus typecheck/build/manifest verification. Both final restoration cases passed.
+- Created output/releases/native-navigator-helper-0.2.0 (unpacked) and native-navigator-helper-0.2.0.zip (9,931 bytes). Archive integrity and manifest verified. ZIP SHA-256: f72268bf973d562d44dd03303ab1d70c708d021897343ccdccd9d43719c2620a.
+- Final source and lockfile review shows only intended changes; main and origin/main remain at daa709a. Saving tested implementation and documentation in a local branch commit; no push or publication.
+
 ## 2026-09-08
 - Read the planning-with-files skill and the complete supplied prompt.
 - Began repository inspection and primary-source research.

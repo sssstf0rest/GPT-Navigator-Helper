@@ -1,4 +1,28 @@
-# Task plan
+# Native navigator helper implementation
+
+## Current objective
+On the user-approved branch `codex/native-navigator-helper`, build a tryable native navigator helper. Keep the original extension preserved on main. Manual, bounded history preparation; host-owned pagination; native navigator detection; cancellation and reading-position restoration. Save the implementation in a local branch commit; remote publication is out of scope.
+
+## Current phases
+1. Create branch and specify smallest viable host integration — complete.
+2. Implement metadata-only early hook, cancellable loader, native detection, and compact helper UI — complete.
+3. Verify with actual production extension and a paginated/virtualized fixture; review UI — complete: 16 unit/18 browser tests passed; light/dark fixture screenshots inspected.
+4. Package trial build and update installation/compatibility documentation — complete: version 0.2.0 unpacked folder and ZIP created and integrity-checked; documentation records exact validation limits.
+
+## Current decisions
+- User approved implementing the experimental helper after the investigation. Live access remains optional for completing a trial build, but required before any claim of live compatibility.
+- The MAIN hook observes history metadata without retaining prompt text. It increases batch size only during an explicit Prepare operation; ChatGPT consumes its own responses.
+- Preserve host virtualization and native navigation. No global matchMedia override, private React state mutation, fabricated history boundary, or replacement navigator.
+- New UI starts with manual Prepare, Stop and return, and immediate cancellation on page interaction. Automatic loading is deferred until validated.
+- Live conversation URL requested asynchronously while independent development proceeds.
+
+## Current errors and resolutions
+- First browser run exposed an asynchronous bridge race: an edge scroll could trigger the first history request before batch expansion was enabled. Added a bounded acknowledgement wait before scrolling.
+- Native last-prompt test assumed a top offset under 60px, but browser scroll clamping correctly placed it at 62px. Replaced that arbitrary threshold with viewport and hit-test confirmation of the intended message.
+
+---
+
+# Previous extension task plan (preserved record)
 
 ## Objective
 Implement the agreed risk-first extension plan. Deliver the compatibility probe and first working MV3 capture → branch-aware index → prompt sidebar → verified historical jump, with a real-browser fixture suite. Live compatibility must be reported separately.

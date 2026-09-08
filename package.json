@@ -1,7 +1,7 @@
 {
-  "name": "chatgpt-conversation-navigator",
+  "name": "chatgpt-native-navigator-helper",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "engines": {
     "node": ">=22.12.0"
@@ -13,7 +13,7 @@
     "test": "vitest run",
     "test:e2e": "npm run build && playwright test",
     "check": "npm run test && npm run test:e2e",
-    "fixture": "node tests/fixture/server.mjs"
+    "fixture": "node tests/native-fixture/server.mjs"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "2.7.1",
