@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "Native Navigator Helper for ChatGPT",
+  "version": "0.2.0",
+  "description": "Prepare conversation history for ChatGPT’s built-in navigator, with progress, cancellation, and position restoration.",
+  "minimum_chrome_version": "111",
+  "content_scripts": [
+    {
+      "js": [
+        "src/native/pageHook.iife.js"
+      ],
+      "matches": [
+        "https://chatgpt.com/*"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "js": [
+        "assets/content.ts-Desl_1TZ.js"
+      ],
+      "matches": [
+        "https://chatgpt.com/*"
+      ],
+      "run_at": "document_idle",
+      "world": "ISOLATED"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "https://chatgpt.com/*"
+      ],
+      "resources": [
+        "assets/content.ts-Desl_1TZ.js"
+      ],
+      "use_dynamic_url": false
+    }
+  ]
+}

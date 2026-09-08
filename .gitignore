@@ -2,6 +2,6 @@ node_modules/
 dist/
 test-results/
 playwright-report/
-output/
 .DS_Store
 *.local
+output/native-investigation/

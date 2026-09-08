@@ -1,0 +1,13 @@
+{
+  "environment": "Local synthetic fixture, production extension, Chromium 153, 1440x1000",
+  "verifiedJumps": 1,
+  "p50Ms": 795,
+  "p95Ms": 795,
+  "measurements": [
+    {
+      "id": "fixture-a-m4",
+      "attempts": 7,
+      "elapsedMs": 795
+    }
+  ]
+}
