@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "Native Navigator Helper for ChatGPT",
+  "version": "0.3.0",
+  "description": "Automatically prepare ChatGPT’s native navigator while preserving your reading position, with pause and manual controls.",
+  "minimum_chrome_version": "111",
+  "content_scripts": [
+    {
+      "js": [
+        "src/native/pageHook.iife.js"
+      ],
+      "matches": [
+        "https://chatgpt.com/*"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "js": [
+        "assets/content.ts-BeTzdrIA.js"
+      ],
+      "matches": [
+        "https://chatgpt.com/*"
+      ],
+      "run_at": "document_idle",
+      "world": "ISOLATED"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "https://chatgpt.com/*"
+      ],
+      "resources": [
+        "assets/content.ts-BeTzdrIA.js"
+      ],
+      "use_dynamic_url": false
+    }
+  ]
+}

@@ -1,3 +1,49 @@
+# Seamless preparation implementation
+
+## Objective
+Implement the approved automatic, bounded preparation on the user-named branch seamless-preparation. Preserve the previous helper branch. Optimize initial requests, use the native pagination sentinel without scrolling, keep manual preparation available, and report live validation limits honestly.
+
+## Phases
+1. Create branch and specify lifecycle/cleanup boundaries — complete (from 6207f07; existing research notes carried forward).
+2. Implement automatic early batching, scoped sentinel loading, position guard, and compact controls — complete.
+3. Exercise the production extension with realistic sentinel/virtualized fixtures, cancellation, routes, and regression checks — complete: 18 unit and 36 browser tests passed, with typecheck/build/manifest verification.
+4. Check live compatibility if a suitable long conversation is available, then package and document the build — complete: live single-page mechanism test showed 0px anchor drift; 0.3.0 unpacked/ZIP packages verified. Complete live extension lifecycle remains explicitly documented as a trial limitation.
+
+## Decisions
+- Automatic preparation never calls the manual scroll/restore routine as a fallback.
+- Work is per active conversation and initial-history version; hidden tabs, deep links, streaming/unsafe anchoring, unknown history, and user interruption stop or defer automatic work.
+- Temporary sentinel styles are always restored, including errors, stops, and route changes. Only one host page is triggered at a time.
+- Early request expansion is restricted to validated current-conversation initial requests. An in-tab pause disables subsequent automatic expansion/loading until reenabled or reloaded.
+- No private module imports or host state writes; no additional permissions or persistent prompt storage.
+- Initial repo inventory rg returned no AGENTS matches (exit 1); user-supplied planning instructions apply. Skill guidance and existing repository test suite are retained.
+
+---
+
+# Automatic, seamless preparation feasibility — 2026-09-09
+
+## Objective and scope
+Investigate automatic activation on each conversation opening and loading history without scrolling to the top and back. User explicitly requests investigation before implementation. Do not modify extension source or install a build.
+
+## Phases
+1. Inspect existing lifecycle and captured host pagination/render behavior — complete.
+2. Compare initial-request expansion, host background pagination, response aggregation, and DOM approaches — complete.
+3. Verify platform constraints and browser mechanism — complete: official docs checked; four isolated Chromium cases run. Live long-chat validation remains conditional on a suitable conversation URL.
+4. Deliver source-backed recommendation, limitations, and implementation validation gates — complete: output/native-investigation/automatic-seamless-feasibility.md.
+
+## Decisions
+- Automatic activation and preserving the reading viewport are separate requirements.
+- The user confirms all tested conversations with five or more prompts work with the current helper.
+- Prefer history consumed by ChatGPT's own store; extension-only data capture does not enable its native navigator.
+- No new implementation or invented instant-loading guarantee. Record source-supported potential separately from live proof.
+- Asked asynchronously for a long conversation needing pagination, while source investigation proceeds.
+
+## Initial evidence
+- Current MAIN document_start hook expands batches only after an explicit content-script Prepare handshake; it normally misses the first request as an optimization opportunity.
+- Host native rail waits for older-history cursor to become null; physical rendering of every historical message is not part of the observed minimum-turn/cursor predicate.
+- Captured host loader iya loads older history independently of scroll position, then compensates scrollTop by the change in scrollHeight when given the real scroller. Normal activation comes from an IntersectionObserver sentinel near the top.
+
+---
+
 # Live native helper investigation
 
 ## Current objective

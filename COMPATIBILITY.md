@@ -1,61 +1,54 @@
-# Native helper compatibility evidence
+# Seamless preparation compatibility evidence
 
-This document describes the native-helper branch, version 0.2.0. It supersedes the compatibility claims for the custom outline on main.
+Version 0.3.0, branch `seamless-preparation`. This document separates local extension tests, observed live behavior, and remaining live validation.
 
-**Implementation and evidence**
+## Live evidence
 
-The final `npm run check` passed **16 unit tests and 18 production-extension browser tests**, plus strict TypeScript, the production build, and manifest/standalone-hook verification. The final browser run completed in approximately 1.2 minutes. This includes an unresponsive history edge, recovery after transient errors, a 501-prompt conversation with an oversized answer, and native controls disappearing after restoration.
+The user confirmed their four-prompt conversations lack the native navigator, while tested conversations with at least five prompts work. Read-only inspection of two provided conversations agreed: four user turns, no older-history cursor, and a false native eligibility predicate. Captured public client source requires at least five eligible user turns plus history, layout, and mode gates.
 
-The browser suite uses the bundled Chromium in a disposable profile and fulfills ChatGPT-origin requests through a local synthetic server. No authenticated ChatGPT conversation was used. A long live conversation URL was requested during this implementation; live compatibility remains unverified.
+A bounded single-page probe in an existing long ChatGPT conversation exercised the same scoped sticky-sentinel mechanism used by the new automatic loader. With the normal 1470px-wide viewport, it triggered **one native older-history request**, recording **0px maximum visible-message anchor drift**, **0 missing frames**, and **344 sampled animation frames**. The scroll offset increased from 40,149 to 138,341 because the host prepended history while keeping the same message in view. Native controls remained absent because more history remained. The temporary styles and request observer were restored after six seconds; DevTools was closed afterward. No prompts were submitted or conversation shared.
 
-The fixture starts with only the newest six prompts and supplies no hidden full timeline to its renderer. Older data arrives through delayed host-owned requests, changes the available scroll range, and is prepended with host anchor adjustment. The renderer keeps only a window of messages mounted. This directly exercises the missing-history condition omitted from the original custom navigator's fixture.
+This establishes one live invocation of the loading mechanism. It does **not** establish a complete multi-page run of the installed 0.3.0 extension, cold-start batch handling on all accounts, every layout, or successful native jumps in every conversation. Those remain live trial checks.
 
-Covered behavior:
+The captured source uses `data-testid="conversation-pagination-sentinel"` with an IntersectionObserver rooted in the conversation scroller and an 80px upper margin. Its loader compensates the scroll position after a synchronous prepend. Native buttons retain `data-toc-item-index` and `data-toc-active` when their labels become prompt text. These are observed implementation details, not public supported extension APIs.
 
-- Initial passive metadata capture and content-script handshake, including initial history requested before body execution.
-- Acknowledgement before the first expanded request; no expansion or automatic preparation on a fresh load; batch expansion disabled after completion/cancellation.
-- Loading a 220-prompt conversation from six initially loaded prompts; servers honoring or ignoring larger batch sizes.
-- Restoration within an oversized answer in a 501-prompt conversation, and final rejection of a native component that disappears after returning.
-- Exact reading-anchor/offset restoration after loading; native first/middle/last clicks reaching the intended mounted message with viewport/hit-test checks.
-- Delayed requests without repeated scroll probes; wheel interruption and explicit Stop and return while a request is in flight.
-- Nested SPA routes, late previous-route responses, and same-URL replacement through a new initial history request.
-- Repeated cursors, failed requests, unknown response shapes, complete history without native controls, and hidden native controls on narrow layouts.
-- Keyboard operation, minimization, light/dark rendering, strict request scoping, request option preservation, payload identity checks, graph ancestry, and malformed bridge state.
+## Production-extension fixture validation
 
-A successful fixture-native jump validates integration with that fixture. It does not establish that ChatGPT's current native implementation has the same behavior.
+The test runner loads the built extension into disposable Chromium and serves synthetic ChatGPT-origin responses from the local fixture. The fixture starts with a limited newest-history window, actually fetches older pages, prepends through its own loader, compensates the host reading anchor, and virtualizes mounted messages. Its native rail requires completed history and five prompts. The fixture’s observer dependencies match the captured host cursor/enabled/error behavior; it does not recreate the observer merely because a request ended.
 
-**Meaning of completeness**
+Covered automatic behavior includes:
 
-For known flat responses, `History loaded` requires a captured initial page followed by cursor-linked older pages, without conflicting branch metadata, terminating with an explicit `has_previous_page=false`. This relies on the host's response contract; it is not an independent audit of the server's full conversation graph. An unlinked terminal page cannot certify completion.
+- An early 100-turn initial request followed by two expanded older requests for 220 prompts, with per-frame anchor sampling, no travel to the top, and fixture-native first/middle/last navigation.
+- A complete first response, server caps, huge answers, native labels containing prompt text, and the four-prompt minimum.
+- Immediate Stop, wheel interruption, Pause/Resume across routes, and scoped temporary-style cleanup after in-flight requests.
+- Simulated visible/hidden lifecycle handling in both MAIN and ISOLATED script worlds, streaming deferral, responsive native visibility, stale route responses, and message deep links.
+- Incompatible sentinel containment, disabled anchoring, changed reading geometry, failed requests, repeated cursors, bounded paging, and explicit manual fallback.
 
-For graph responses, the selected node's parent chain must reach an explicit root without invalid messages, duplicate identities, missing nodes, or cycles. Unknown structures remain unknown. A visible native component can be reported separately from verified history completeness.
+The preserved manual suite covers long conversations, anchor restoration, delayed loading, Stop and return, interaction, nested routes, same-URL replacement, unknown payloads, transient recovery, hidden/disappearing native controls, keyboard access, and light/dark UI. Unit tests cover request scoping/options, capture identities, graph ancestry, linked pagination, malformed bridge states, and controller state changes during native waits.
 
-The helper rechecks native visibility after restoring the reading position. It reports visibility, not a guarantee that every live native entry will navigate successfully.
+The final `npm run check` passed **18 unit tests and 36 production-extension browser tests**, plus strict TypeScript, production build, and manifest/standalone-hook verification. The browser suite completed in 2.4 minutes. Fixture-native clicks establish behavior of the fixture, not ChatGPT’s own navigation code.
 
-**Known boundaries**
+## Completeness and boundaries
 
-1. Current native detection recognizes English `Prompt N` accessibility labels/descriptions. A different language or host selector can produce “not detected” even when another form of navigator exists. No account feature flag or private mounting condition is overridden.
-2. Conversation history paths, response fields, message attributes, and scroll behavior are host compatibility assumptions. The implementation recognizes same-origin GET `/backend-api/conversation(s)/:id` and `/backend-api/conversation(s)/:id/messages?before=...`, scoped to the open `/c/:id` or nested conversation route.
-3. The helper relies on ChatGPT's own scroll-triggered loading. It does not fetch hidden pages into a separate cache or mutate the host's React store. If the site requires another loading trigger, the run stops without guessing.
-4. There is no XHR/SSE interception. Branch changes without a captured initial request, route change, or user interaction may not be identifiable. Do not use a trial run as evidence of support for every edited/regenerated branch.
-5. Restoration uses a stable message identity plus an offset, seeded by distance from the loaded bottom. After concurrent content changes or a different virtualizer strategy, the anchor may not remount as expected. Corrections are limited, and failure is explicit.
-6. An already-issued ChatGPT request is allowed to finish after cancellation. The helper stops making scroll moves and disables request expansion; the host itself may still adjust layout when that response arrives.
-7. Limits are three minutes, 80 added pages, 160 edge steps, a 12-second progress deadline, two clone readers, 16 MB/eight seconds per clone, and 10,000 retained message identities. These are bounds, not promises of complete arbitrarily long history.
-8. The lower-left helper can overlap host content in narrow layouts; it can be minimized. It does not reserve space in the ChatGPT layout. It detects the previous custom outline and asks for that extension to be disabled before preparing.
-9. Initial history requests remain unchanged. Larger batches are requested only during an explicit active Prepare operation; the server may ignore or cap them. A ten-second renewable lease limits a lost content script's request override.
-10. Native navigation can still have its own bugs. Appearance alone does not demonstrate usable historical jumps.
+- Flat history is complete only after a recognized initial page and cursor-linked older pages end with explicit `has_previous_page=false`, without conflicting branch metadata. Graph history must reach an explicit root through an intact selected parent chain. Unknown structures remain unknown.
+- Automatic initial expansion applies only to a validated current-conversation plural `/backend-api/conversations/:id` GET. Prefetched requests issued before the route changes may be missed; cached navigation without a new captured initial response remains unverified. Deep links and targeted initial windows are skipped.
+- Automatic pagination requires the known sentinel inside the actual scroll area, compatible containment, a visible tab, a desktop hover layout at least 1024px wide, and stable anchoring without detected streaming. Unsupported layouts stop or defer; there is no automatic scroll fallback.
+- Temporary inline sentinel properties are restored on request start, cancellation, route change, failure, timeout, and completion. Other inline styles are preserved. The extension does not rewrite the host history store or render another navigator.
+- The reading guard stops further paging above 8px of sampled message-anchor drift or after several missing-anchor frames. It cannot undo shifts, delayed image/math reflow, or a response already in flight. Manual restoration can also fail explicitly under changing content or virtualizer behavior.
+- Automatic runs allow 60 seconds and at most 20 additional captured pages; each triggered page gets at most 12 seconds to progress. A final permitted page can still report completion. Manual runs allow three minutes, 80 pages, and 160 edge steps. Capture permits two readers, 16 MB/eight seconds per clone, and 10,000 identities.
+- Pause is per tab and survives SPA conversation changes, but reload resets automatic mode to enabled. It cannot retract a first batch already issued. Temporary expansion during an active run has a renewable ten-second lease.
+- Interaction ends the current automatic attempt. It does not automatically retry on the same unchanged history context. A new conversation/history load or Pause/Resume can start another attempt. Backgrounding cancels active work and permits a recheck on foregrounding.
+- There is no XHR or SSE interception. Same-URL branch edits without a captured replacement initial request or user interaction may not be identifiable. A native history error may require ChatGPT’s own retry control or a reload before manual loading can work again.
+- Initial expansion may delay the first render, increase memory/bandwidth, or be capped by the server. Complete captured history does not bypass native minimum-turn, account, mode, responsive, or feature gates, and visible controls do not prove all native jumps work.
 
-**Live trial checklist**
+## Remaining live trial
 
-Use a user-selected existing conversation with the previous extension disabled, then reload after installing this build. Do not submit new prompts or publish/share the conversation for the test.
+After loading the unpacked 0.3.0 folder and reloading ChatGPT:
 
-| Step | Evidence to record |
-|---|---|
-| Initial state | Native component existence/visibility, known missing early prompt, viewport/zoom, metadata status |
-| Prepare | Actual earlier requests and progress, whether batches are enlarged, whether the genuine beginning is reached |
-| Return | The same message and reading offset restored, or an explicit restoration failure |
-| Native use | Oldest, middle, and newest native entries reach the correct messages without sustained twitching |
-| Lifecycle | Repeat after reloading and switching conversations; stop while a request is pending |
-| Layout | Vary width independently of loaded history to distinguish responsive hiding from missing data |
+1. Open a long conversation from both a fresh page load and the sidebar. Check whether preparation begins automatically and the message being read stays still.
+2. Verify the true oldest prompt is reachable using the native rail, then try a middle and newest prompt.
+3. Stop during a request, type or scroll, and verify no later automatic page is triggered for that run.
+4. Pause, switch conversations, resume, and switch tabs while loading. Confirm expected lifecycle behavior.
+5. Compare a four-prompt conversation, a supported long desktop conversation, and a narrow/streaming view. Record the helper’s status and compatibility details if it stops.
 
-If history is loaded but the native component remains unavailable or its own jumps remain unstable, report that outcome before adding more invasive mechanisms. Keep unknown live behavior separate from the passing local tests.
+Keep these observations separate from local passing tests. No new prompts or shared links are needed to run this trial.

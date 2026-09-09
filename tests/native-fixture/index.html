@@ -10,7 +10,7 @@
   header { padding: 22px 30px; display: flex; justify-content: space-between; border-bottom: 1px solid #e9ece7; }
   header b { font: 21px Georgia, serif; } header span { font-size: 10px; color: #778579; letter-spacing: .1em; }
   main { position: fixed; top: 84px; bottom: 95px; left: max(350px, calc((100vw - 760px) / 2)); right: 110px; overflow-y: auto; overflow-anchor: auto; }
-  #timeline { position: relative; }
+  #conversation-body { display: flex; flex-direction: column; } #timeline { position: relative; flex: none; }
   article { position: absolute; width: 100%; padding: 18px 30px; }
   [data-message-author-role=user] { border-radius: 18px; background: #f1f3ef; margin-left: 60px; padding: 15px 20px; }
   [data-message-author-role=assistant] { padding: 10px 5px; }
@@ -20,13 +20,13 @@
   .native-rail button::before { content: ''; display: block; width: 22px; height: 3px; border-radius: 2px; background: #a8b1a6; }
   .native-rail button:hover::before { background: #355a42; width: 28px; }
   footer { position: fixed; bottom: 22px; left: max(350px, calc((100vw - 760px) / 2)); right: 120px; border: 1px solid #e0e5dc; border-radius: 24px; padding: 12px 25px; color: #8b9587; }
-  #spinner { position: sticky; top: 0; z-index: 2; text-align: center; background: #f0f4eb; font-size: 12px; }
+  #spinner { height: 40px; flex: none; text-align: center; font-size: 12px; }
   .dark body { background: #171d18; color: #e5ebdf; } .dark header { border-color: #354035; } .dark [data-message-author-role=user] { background: #2a342b; }
   @media(max-width:1100px) { .native-rail { display:none; } }
   @media(max-width:800px) { main { left: 15px; right: 15px; } header span { display:none; } footer { left: 20px; right: 20px; } }
 </style></head><body>
 <header><b>A conversation, revisited.</b><span>LOCAL TEST FIXTURE · NO LIVE CHATGPT DATA</span></header>
-<main aria-label="Conversation"><div id="spinner" hidden>Loading earlier messages…</div><div id="timeline"></div></main>
+<main aria-label="Conversation"><div id="conversation-body"><div id="spinner" data-testid="conversation-pagination-sentinel"></div><div id="timeline"></div></div></main>
 <footer>Messages are loaded in batches. Only the visible window is rendered.</footer>
 <script type="module" src="/native-fixture.js"></script>
 </body></html>

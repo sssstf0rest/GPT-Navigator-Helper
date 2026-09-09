@@ -45,10 +45,13 @@ export async function prepareHistory(env: PrepareEnvironment, signal: AbortSigna
       while (env.now() < until) {
         const current = env.observe();
         if (changed(current)) return 'changed';
+        if (current.history.pending || current.history.boundary !== 'complete' || current.history.issue) break;
         report(current, 'waiting-native');
         if (current.native.visible) return 'ready';
         await tick();
       }
+      const current = env.observe();
+      if (current.history.pending || current.history.boundary !== 'complete' || current.history.issue) continue;
       return env.observe().native.found ? 'hidden' : 'loaded-no-native';
     }
     // The component may be usable even when its payload shape is unrecognized. Do not claim completeness.

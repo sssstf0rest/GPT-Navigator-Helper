@@ -26,9 +26,10 @@ function visible(el: HTMLElement): boolean {
   return hit === el || (hit !== null && el.contains(hit));
 }
 export function nativeNavigation(): NativeState {
-  const controls = Array.from(document.querySelectorAll<HTMLElement>('button[aria-label], button[aria-description], [role="button"][aria-label], [role="button"][aria-description]'))
-    .filter(el => ['aria-label', 'aria-description'].some(attr => /^prompt\s+\d+(?:\b|:)/i.test(el.getAttribute(attr) ?? '')));
-  // Known native accessibility signature. Unknown/localized implementations remain unsupported.
+  const controls = Array.from(document.querySelectorAll<HTMLElement>('button[aria-label], button[aria-description], button[data-toc-item-index], [role="button"][aria-label], [role="button"][aria-description]'))
+    .filter(el => (el.hasAttribute('data-toc-active') && /^\d+$/.test(el.getAttribute('data-toc-item-index') ?? '')) ||
+      ['aria-label', 'aria-description'].some(attr => /^prompt\s+\d+(?:\b|:)/i.test(el.getAttribute(attr) ?? '')));
+  // Native markers retain these structural attributes when labels change to prompt text.
   return { found: controls.length, visible: controls.filter(visible).length };
 }
 interface Identity { attribute: string; value: string }
@@ -50,6 +51,11 @@ function findAnchor(id: Identity): HTMLElement | null {
 }
 export interface ReadingPosition {
   identity: Identity | null; element: HTMLElement; offset: number; distanceFromBottom: number; scroller: HTMLElement;
+}
+export function readingPositionDrift(position: ReadingPosition): number | null {
+  if (!position.scroller.isConnected) return null;
+  const anchor = position.identity ? findAnchor(position.identity) : position.element.isConnected ? position.element : null;
+  return anchor ? anchor.getBoundingClientRect().top - viewportTop(position.scroller) - position.offset : null;
 }
 export function saveReadingPosition(): ReadingPosition | null {
   const scroller = conversationScroller();

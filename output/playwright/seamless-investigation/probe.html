@@ -1,0 +1,39 @@
+<!doctype html><meta charset="utf-8"><title>Isolated history-trigger experiment</title>
+<style>body{font:16px sans-serif}#scroller{height:500px;width:680px;overflow:auto;border:1px solid #888;position:relative}#content{display:flex;flex-direction:column}#sentinel{height:40px;flex:none;background:#cef;pointer-events:none}#rows>div{box-sizing:border-box;border-bottom:1px solid #aaa;padding:12px}pre{white-space:pre-wrap}</style>
+<h1>Browser mechanism probe — not ChatGPT</h1><button id="run">Run isolated cases</button><pre id="result">Not run</pre><div id="scroller"></div>
+<script>
+const frame=()=>new Promise(r=>requestAnimationFrame(r));
+async function runCase(mode){
+ const scroller=document.querySelector('#scroller');
+ scroller.style.overflowAnchor=mode==='sticky-no-anchor'?'none':'auto';
+ scroller.innerHTML='<div id="content"><div id="sentinel"></div><div id="rows"></div></div>';
+ const sentinel=document.querySelector('#sentinel'),rows=document.querySelector('#rows');
+ for(let i=0;i<12;i++){const el=document.createElement('div');el.style.height=(260+(i%3)*70)+'px';el.textContent='Existing message '+i;rows.append(el)}
+ if(mode==='constrained-sticky'){const wrap=document.createElement('div');wrap.style.height='40px';sentinel.before(wrap);wrap.append(sentinel)}
+ scroller.scrollTop=scroller.scrollHeight-scroller.clientHeight-150;
+ await frame();await frame();
+ const anchor=[...rows.children].find(e=>e.getBoundingClientRect().bottom>scroller.getBoundingClientRect().top+100);
+ const initialTop=scroller.scrollTop,initialAnchor=anchor.getBoundingClientRect().top;
+ let pages=0,pending=false,done=false,observer,travel=0,maxDrift=0;
+ const samples=[];
+ const sample=()=>{if(done)return;const drift=anchor.getBoundingClientRect().top-initialAnchor;maxDrift=Math.max(maxDrift,Math.abs(drift));samples.push({top:scroller.scrollTop,drift});if(scroller.scrollTop<initialTop-2)travel++;requestAnimationFrame(sample)};
+ requestAnimationFrame(sample);
+ const observe=()=>{observer?.disconnect();observer=new IntersectionObserver(async entries=>{
+  if(!entries[0]?.isIntersecting||pending||pages>=3||done)return;
+  pending=true;await new Promise(r=>setTimeout(r,45));if(done)return;
+  const oldHeight=scroller.scrollHeight,oldTop=scroller.scrollTop;
+  const batch=document.createDocumentFragment();for(let i=0;i<3;i++){let el=document.createElement('div');el.style.height=(210+i*50)+'px';el.textContent='Older batch '+(pages+1);batch.append(el)}
+  rows.prepend(batch);
+  // Model only the synchronous height-delta anchoring seen in the host source.
+  scroller.scrollTop=Math.max(0,Math.min(oldTop+scroller.scrollHeight-oldHeight,scroller.scrollHeight-scroller.clientHeight));
+  pages++;pending=false;
+  if(pages===3){observer.disconnect();sentinel.remove()}else observe();
+ },{root:scroller,rootMargin:'80px 0px 0px'});observer.observe(sentinel)};
+ observe();await frame();await frame();
+ if(mode!=='normal')Object.assign(sentinel.style,{position:'sticky',top:'80px'});
+ await new Promise(r=>setTimeout(r,550));await frame();
+ done=true;observer.disconnect();
+ return {mode,pages,initialScrollTop:initialTop,finalScrollTop:scroller.scrollTop,maxVisibleAnchorDriftPx:maxDrift,framesMovingTowardTop:travel,sampledFrames:samples.length};
+}
+document.querySelector('#run').onclick=async()=>{document.querySelector('#run').disabled=true;const results=[];for(const mode of ['normal','sticky','constrained-sticky','sticky-no-anchor'])results.push(await runCase(mode));window.probeResults=results;document.querySelector('#result').textContent=JSON.stringify(results,null,2);document.querySelector('#run').disabled=false;};
+</script>

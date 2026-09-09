@@ -23,6 +23,10 @@ button:disabled { cursor: default; opacity: .5; }
 .action:hover { filter: brightness(.95); }
 .action.stop { background: transparent; color: var(--ink); border-color: var(--line); }
 .footnote { margin-top: 10px; color: var(--muted); font-size: 10px; }
+.manual-note { margin-top: 6px; color: var(--muted); font-size: 10px; }
+.automatic { margin-top: 12px; padding: 6px 0; border: 0; background: transparent; color: var(--accent); font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
+.compact { display: flex; align-items: center; gap: 6px; }
+.compact-stop { padding: 8px 10px; background: var(--paper); color: var(--ink); border: 1px solid var(--line); border-radius: 20px; font-size: 12px; }
 details { margin-top: 15px; color: var(--muted); font-size: 10px; }
 summary { cursor: pointer; width: fit-content; }
 pre { white-space: pre-wrap; overflow-wrap: anywhere; margin-bottom: 0; font: 10px/1.6 ui-monospace, monospace; user-select: text; }

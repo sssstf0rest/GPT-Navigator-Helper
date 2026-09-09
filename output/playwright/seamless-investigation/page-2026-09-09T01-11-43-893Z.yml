@@ -1,0 +1,4 @@
+- generic [active] [ref=e1]:
+  - heading "Browser mechanism probe — not ChatGPT" [level=1] [ref=e2]
+  - button "Run isolated cases" [ref=e3]
+  - generic [ref=e4]: Not run

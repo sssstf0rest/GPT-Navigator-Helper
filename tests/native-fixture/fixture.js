@@ -7,10 +7,37 @@ let loaded = [];
 let offsets = [];
 let pageInfo;
 let pending = false;
+let hasError = false;
 let generation = 0;
 let requests = 1;
 let scrollEvents = 0;
 let lastRange = '';
+let observer;
+let observedKey;
+const initialScrolls = [];
+const anchorSamples = [];
+let sampledAnchor;
+let sampledTop;
+let minTop = Infinity;
+function sample() {
+  if (sampledAnchor) { const el = document.querySelector(`[data-message-id="${sampledAnchor}"]`); anchorSamples.push(el ? el.getBoundingClientRect().top - sampledTop : null); minTop = Math.min(minTop, scroller.scrollTop); }
+  requestAnimationFrame(sample);
+}
+requestAnimationFrame(sample);
+function updateSentinel() {
+  const nextKey = `${id}:${pageInfo.start_cursor}:${pageInfo.has_previous_page}:${hasError}`;
+  if (observedKey === nextKey) return;
+  observedKey = nextKey;
+  observer?.disconnect();
+  if (!pageInfo.has_previous_page || options.has('legacy')) { spinner.remove(); return; }
+  if (!spinner.isConnected) timeline.before(spinner);
+  if (options.has('constrained') && spinner.parentElement.id !== 'constraint') {
+    const wrap = document.createElement('div'); wrap.id = 'constraint'; wrap.style.height = '40px'; spinner.before(wrap); wrap.append(spinner);
+  }
+  spinner.textContent = pending ? 'Loading earlier messages…' : '';
+  observer = new IntersectionObserver(entries => { if (entries[0]?.isIntersecting) void loadOlder(); }, { root: scroller, rootMargin: '80px 0px 0px' });
+  if (!hasError) observer.observe(spinner);
+}
 
 function layout() {
   let height = 0;
@@ -44,12 +71,14 @@ function render() {
 }
 function updateNative() {
   document.querySelector('.native-rail')?.remove();
-  if (pageInfo.has_previous_page || options.has('railoff')) return;
+  if (pageInfo.has_previous_page || options.has('railoff') || loaded.filter(m => m.author.role === 'user').length < 5) return;
   const rail = document.createElement('nav'); rail.className = 'native-rail'; rail.ariaLabel = 'Fixture native prompt navigation';
   let number = 0;
   loaded.forEach((message, i) => {
     if (message.author.role !== 'user') return;
     const button = document.createElement('button'); button.ariaLabel = `Prompt ${++number}`; button.title = message.content.parts[0];
+    button.dataset.tocItemIndex = String(number - 1); button.dataset.tocActive = 'false';
+    if (options.has('labels')) button.ariaLabel = message.content.parts[0];
     button.onclick = () => { scroller.scrollTo({ top: offsets[i], behavior: 'instant' }); requestAnimationFrame(render); };
     rail.append(button);
   });
@@ -57,17 +86,20 @@ function updateNative() {
 }
 function use(payload) {
   const data = payload.fixtureOnly ?? payload;
-  loaded = data.messages; pageInfo = data.page_info;
-  layout(); scroller.scrollTop = scroller.scrollHeight; render(); updateNative();
+  loaded = data.messages; pageInfo = data.page_info; hasError = false; observedKey = undefined;
+  scroller.style.overflowAnchor = options.has('noanchor') ? 'none' : 'auto';
+  if (options.has('streaming')) scroller.dataset.streamActive = ''; else delete scroller.dataset.streamActive;
+  updateSentinel(); layout(); scroller.scrollTop = scroller.scrollHeight; render(); updateNative();
+  initialScrolls.push(scroller.scrollTop);
 }
 async function loadOlder() {
   if (pending || !pageInfo?.has_previous_page || options.has('stuck')) return;
-  pending = true; spinner.hidden = false; requests++;
+  pending = true; spinner.textContent = 'Loading earlier messages…'; requests++;
   const token = generation;
   const query = new URLSearchParams(options); query.set('before', pageInfo.start_cursor);
   try {
     const response = await fetch(`/backend-api/conversations/${id}/messages?${query}`);
-    if (!response.ok) return;
+    if (!response.ok) { hasError = true; return; }
     const payload = await response.json();
     if (token !== generation) return;
     const data = payload.fixtureOnly ?? payload;
@@ -79,12 +111,13 @@ async function loadOlder() {
     // Simulate a host virtualizer retaining the current content anchor after prepending new pages.
     scroller.scrollTop = top + scroller.scrollHeight - height;
     render(); updateNative();
-  } finally { if (token === generation) { pending = false; spinner.hidden = true; } }
+    if (options.has('drift')) { timeline.style.marginTop = '40px'; }
+  } finally { if (token === generation) { pending = false; spinner.textContent = ''; updateSentinel(); } }
 }
 scroller.addEventListener('scroll', () => {
   scrollEvents++;
   requestAnimationFrame(render);
-  if (scroller.scrollTop < 30) void loadOlder();
+  if (options.has('legacy') && scroller.scrollTop < 30) void loadOlder();
 });
 new ResizeObserver(() => { lastRange = ''; render(); }).observe(scroller);
 use(await window.nativeInitial);
@@ -93,16 +126,19 @@ window.nativeFixture = {
   get loaded() { return loaded.length; }, get pending() { return pending; }, get requests() { return requests; },
   get scrollTop() { return scroller.scrollTop; }, get scrollEvents() { return scrollEvents; },
   get earliest() { return loaded[0]?.id; },
+  get initialScrolls() { return initialScrolls; },
+  get anchorSamples() { return anchorSamples; }, get minTop() { return minTop; },
+  startSampling() { const top = scroller.getBoundingClientRect().top; const all = [...document.querySelectorAll('[data-message-id]')]; const el = all.find(el => el.getBoundingClientRect().top >= top) ?? all[0]; sampledAnchor = el?.dataset.messageId; sampledTop = el?.getBoundingClientRect().top; anchorSamples.length = 0; minTop = scroller.scrollTop; },
   scroll(top) { scroller.scrollTop = top; render(); },
   async changeRoute(nextId, query = 'count=24') {
-    generation++; pending = false; id = nextId; options = new URLSearchParams(query);
+    generation++; requests++; pending = false; sampledAnchor = undefined; observer?.disconnect(); id = nextId; options = new URLSearchParams(query);
     history.pushState({}, '', `/g/g-fixture/c/${id}?${query}`);
     use(await fetch(`/backend-api/conversations/${id}?${query}`).then(r => r.json()));
   },
   async branch() {
-    generation++; pending = false;
+    generation++; pending = false; sampledAnchor = undefined; observer?.disconnect();
     use(await fetch(`/backend-api/conversations/${id}?count=3`).then(r => r.json()));
   },
   grow() { loaded[0].fixtureHeight += 90; layout(); render(); },
-  recover() { for (const key of ['fail', 'repeat', 'stuck']) options.delete(key); },
+  recover() { hasError = false; for (const key of ['fail', 'repeat', 'stuck']) options.delete(key); updateSentinel(); },
 };

@@ -52,9 +52,22 @@ export function historyRequest(input: RequestInfo | URL, init: RequestInit | und
     const before = identifier(url.searchParams.get('before'));
     // Other message queries may be forward pages or targeted windows, not an older-history chain.
     if (match[2] && !before) return null;
-    if (!match[2] && ['before', 'after', 'message_id'].some(key => url.searchParams.has(key))) return null;
+    if (!match[2] && ['before', 'after', 'message_id', 'include_message_id'].some(key => url.searchParams.has(key))) return null;
     return { conversationId: match[1]!, kind: match[2] ? 'older' : 'initial', before };
   } catch { return null; }
+}
+
+export function isMessageDeepLink(pageUrl: string): boolean {
+  const query = new URL(pageUrl).searchParams;
+  return ['message', 'messageId'].some(key => query.has(key));
+}
+
+/** Only optimize an unambiguous initial request; never speculative requests for another chat. */
+export function canExpandInitial(input: RequestInfo | URL, init: RequestInit | undefined, pageUrl: string): boolean {
+  const meta = historyRequest(input, init, pageUrl);
+  if (meta?.kind !== 'initial' || isMessageDeepLink(pageUrl)) return false;
+  const url = new URL(input instanceof Request ? input.url : String(input), pageUrl);
+  return url.pathname.startsWith('/backend-api/conversations/');
 }
 
 /** Change only the page's own validated request; keep method, headers, credentials, and signal. */

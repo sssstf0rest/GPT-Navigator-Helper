@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { HistoryChain, historyMetadata } from '../../src/native/historyMetadata';
-import { expandHistoryRequest, historyRequest, isHistoryState, emptyHistory } from '../../src/native/shared';
+import { canExpandInitial, expandHistoryRequest, historyRequest, isHistoryState, emptyHistory } from '../../src/native/shared';
 
 const message = (id: string, role = 'user') => ({ id, author: { role }, content: { parts: ['PRIVATE TEXT MUST NOT CROSS THE BRIDGE'] } });
 const payload = (ids: string[], cursor: string | null, branch = 'tail') => ({ conversation_id: 'abc', current_node: branch,
@@ -78,6 +78,16 @@ describe('request scoping and preservation', () => {
     const url = '/backend-api/conversations/abc?num_turns=200';
     expect(expandHistoryRequest(url, undefined, route)[0]).toBe(url);
     expect(expandHistoryRequest('/backend-api/models', undefined, route)[0]).toBe('/backend-api/models');
+  });
+  it('only automatically expands unambiguous initial pages, preserving message deep links and speculative routes', () => {
+    expect(canExpandInitial('/backend-api/conversations/abc?num_turns=6', undefined, route)).toBe(true);
+    for (const url of ['/backend-api/conversations/other', '/backend-api/conversation/abc',
+      '/backend-api/conversations/abc/messages?before=x', '/backend-api/conversations/abc?include_message_id=target']) {
+      expect(canExpandInitial(url, undefined, route)).toBe(false);
+    }
+    for (const suffix of ['?message=target', '?messageId=target']) {
+      expect(canExpandInitial('/backend-api/conversations/abc', undefined, route + suffix)).toBe(false);
+    }
   });
   it('rejects malformed or unbounded state packets', () => {
     const state = emptyHistory('abc'); expect(isHistoryState(state)).toBe(true);

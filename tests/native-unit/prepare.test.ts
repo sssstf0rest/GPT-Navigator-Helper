@@ -47,3 +47,12 @@ it('enforces total limits even when a page continually changes height', async ()
   expect(await prepareHistory(f.env, f.signal.signal, () => {}, limits)).toBe('limit');
   expect(f.moves).toBeLessThan(15);
 });
+it('rechecks history while waiting for native controls instead of reporting a stale completion', async () => {
+  const f = fixture((s, time) => {
+    if (time >= 100 && time < 700) s.history.pending = 1;
+    if (time >= 700) { s.history.pending = 0; s.history.issue = 'http-error'; }
+  });
+  f.state.history.boundary = 'complete';
+  expect(await prepareHistory(f.env, f.signal.signal, () => {}, limits)).toBe('network-error');
+  expect(f.moves).toBe(0);
+});

@@ -51,3 +51,25 @@
 - Independent public-client-source audit found current five-user-turn minimum plus mode/layout/history gates. Verifying actual live host turn counts via existing module read-only selectors. No host state changes or new prompts sent.
 - Completed live checks on both supplied tabs: actual user turns=4, native predicate=false, older cursor absent, no loading. Reproduced Prepare failure in both and manual first-prompt scroll in LLM Terms.
 - Closed DevTools and returned LLM Terms to recent messages. Saved source-backed report and public asset hashes. No extension source edits or new build in this verification; report explicitly distinguishes diagnosis from a fix.
+
+## Automatic preparation feasibility (2026-09-09)
+- Read current source/planning files; working tree initially clean at 6207f07, branch tracks origin/codex/native-navigator-helper. No implementation changes.
+- Applied planning-with-files, ran session catchup (no extra report), requested suitable live long-conversation URL asynchronously.
+- Traced host pagination loader, rendering gate, and initial request lifecycle in captured public assets. Narrowing subsequent reads after oversized minified excerpts.
+- Ran four isolated browser mechanism cases via Playwright CLI: sticky trigger succeeds with stable reading anchor in a compatible layout; constrained containment and disabled anchoring expose limitations. No production extension source changed. Browser console only reported a missing favicon (unrelated to the experiment).
+- Completed comparison and recommendation: automatic route-aware activation, early bounded batch expansion, then a live-validated sentinel trigger; no automatic scrolling fallback. Saved feasibility report, including negative controls and remaining live validation gate.
+
+## Seamless branch implementation
+- User approved implementation and exact new branch name. Created seamless-preparation from 6207f07, retaining research notes. Previous helper branch is unchanged.
+- Implementing initial automatic request expansion and a separate bounded sentinel preparation path; manual scroll-based preparation remains an explicit action.
+- Initial typecheck caught an unused support-file import; removed it. Automatic suite passed 12/12. Manual regression rerun in progress after fixing Pause/SPA ordering.
+- Read live DOM-only geometry in the currently open Chrome conversation; compatible sentinel exists with remaining history. Preparing a single-page mechanism check, without changing account state or submitting prompts.
+
+- Resumed and reconnected CUA after its runtime binding expired. Read back the successful bounded live probe and closed DevTools. Targeted repeated-cursor regression passed after correcting the fixture observer dependencies to match the captured host source. Added late native-mount status refresh and corrected the automatic page-budget boundary to allow success on the final permitted page.
+- Expanded automatic suite passed 17/18; the visibility simulation failed because a MAIN-world document property override does not affect the isolated content-script world. Correcting the harness rather than changing production visibility behavior. The final-page budget, Pause/SPA/Resume, streaming, resize status, and explicit manual fallback cases passed.
+- Inspected compact loading, expanded light, and dark fixture screenshots: controls are readable and remain compact by default. Packaged 0.3.0 with three production files, verified ZIP integrity and byte equality against dist, and saved its SHA-256 checksum. Full release check is running.
+- Visibility regression now passes using CDP to model the browser visibility state in both MAIN and ISOLATED worlds. Playwright reported visible even when switching headed tabs, so actual background-tab behavior remains in the live trial checklist. No test-only visibility hooks were added to production code.
+- Final release check passed: 18 unit tests, 36 production-extension browser tests (2.4 minutes), strict typecheck/build, and manifest/standalone-hook verification. Final package SHA-256: 57ad66056cddce496e5e65f81d966690d05c84121c004cd4a0da27694cc2ce56 (12,319 bytes). Source and documentation are complete in the local seamless-preparation working tree. Previous branches remain at their original commits. No new build was installed in the user’s Chrome profile; full live extension trials remain documented separately from the successful single-page mechanism test.
+
+## Publish seamless preparation
+- User explicitly requested committing and pushing the current changes. Reviewed the changed files, synthetic experiment artifacts, package integrity, and credential patterns. Publishing the tested 0.3.0 source, tests, documentation, screenshots, and release artifacts on seamless-preparation.

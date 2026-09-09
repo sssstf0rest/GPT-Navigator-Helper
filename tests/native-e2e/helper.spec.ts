@@ -1,60 +1,5 @@
-import { test as base, chromium, expect } from '@playwright/test';
-import type { BrowserContext, Page } from '@playwright/test';
+import { test, expect, host, open, prepare, anchor, expectAnchor } from './support';
 import { mkdir } from 'node:fs/promises';
-import path from 'node:path';
-
-declare global {
-  interface Window {
-    nativeFixture: { ready: boolean; loaded: number; pending: boolean; requests: number; scrollTop: number;
-      scrollEvents: number; earliest: string; scroll(top: number): void;
-      changeRoute(id: string, query?: string): Promise<void>; branch(): Promise<void>; grow(): void; recover(): void };
-  }
-}
-const test = base.extend<{ context: BrowserContext; page: Page }>({
-  context: async ({}, use) => {
-    const extension = path.resolve('dist');
-    const context = await chromium.launchPersistentContext('', {
-      channel: 'chromium', headless: true, viewport: { width: 1440, height: 1000 },
-      args: [`--disable-extensions-except=${extension}`, `--load-extension=${extension}`],
-    });
-    await context.route('https://chatgpt.com/**', async route => {
-      const url = new URL(route.request().url());
-      const response = await fetch(`http://127.0.0.1:4173${url.pathname}${url.search}`);
-      await route.fulfill({ status: response.status, contentType: response.headers.get('content-type') ?? 'text/plain', body: Buffer.from(await response.arrayBuffer()) });
-    });
-    await use(context); await context.close();
-  },
-  page: async ({ context }, use) => { const page = await context.newPage(); await use(page); },
-});
-const host = (page: Page) => page.locator('#native-navigator-helper');
-async function open(page: Page, query = 'count=220') {
-  await page.goto(`https://chatgpt.com/c/fixture-a?${query}`);
-  await page.waitForFunction(() => window.nativeFixture?.ready);
-  await expect(page.getByRole('region', { name: 'Native navigator helper' })).toBeVisible();
-  await expect(host(page).locator('pre')).toContainText('"bridge": "connected"');
-  await expect(host(page).locator('pre')).toContainText(query.includes('unknown=1') ? '"issue": "capture-unavailable"' : '"pagesObserved": 1');
-  await expect(host(page).locator('pre')).toContainText('"pendingRequests": 0');
-  await expect(page.getByRole('button', { name: 'Prepare navigation' })).toBeEnabled();
-}
-async function prepare(page: Page, outcome = 'ready') {
-  await page.getByRole('button', { name: 'Prepare navigation' }).click();
-  await expect(host(page)).toHaveAttribute('data-phase', outcome);
-}
-async function anchor(page: Page) {
-  return page.locator('main [data-message-id]').evaluateAll(els => {
-    const top = document.querySelector('main')!.getBoundingClientRect().top;
-    const bottom = document.querySelector('main')!.getBoundingClientRect().bottom;
-    const element = els.find(el => { const r = el.getBoundingClientRect(); return r.top >= top && r.top < bottom; }) ??
-      els.find(el => { const r = el.getBoundingClientRect(); return r.bottom > top && r.top < bottom; })!;
-    return { id: element.getAttribute('data-message-id')!, offset: element.getBoundingClientRect().top - top };
-  });
-}
-async function expectAnchor(page: Page, saved: { id: string; offset: number }) {
-  const el = page.locator(`main [data-message-id="${saved.id}"]`);
-  await expect(el).toBeVisible();
-  const offset = await el.evaluate(el => el.getBoundingClientRect().top - document.querySelector('main')!.getBoundingClientRect().top);
-  expect(Math.abs(offset - saved.offset)).toBeLessThanOrEqual(4);
-}
 
 test('prepares real missing pages, restores reading position, and leaves native first/middle/last jumps to the host', async ({ page }) => {
   await open(page);
@@ -82,24 +27,24 @@ test('prepares real missing pages, restores reading position, and leaves native 
   }
 });
 
-test('batch expansion occurs only during Prepare and does not automatically load on reopen', async ({ page }) => {
+test('pausing automatic preparation preserves manual batching until the tab reloads', async ({ page }) => {
   const requests: string[] = [];
   page.on('request', request => { if (request.url().includes('/backend-api/')) requests.push(request.url()); });
   await open(page, 'count=30');
-  expect(new URL(requests[0]!).searchParams.has('num_turns')).toBe(false);
+  expect(new URL(requests[1]!).searchParams.has('num_turns')).toBe(false);
   await prepare(page);
-  expect(requests.slice(1).every(url => new URL(url).searchParams.get('num_turns') === '100')).toBe(true);
+  expect(requests.slice(2).every(url => new URL(url).searchParams.get('num_turns') === '100')).toBe(true);
   await expect(host(page).locator('pre')).toContainText('"largerBatches": false');
   await page.reload(); await page.waitForFunction(() => window.nativeFixture?.ready);
-  expect(await page.evaluate(() => window.nativeFixture.loaded)).toBe(12);
-  expect(new URL(requests.at(-1)!).searchParams.has('num_turns')).toBe(false);
+  expect(await page.evaluate(() => window.nativeFixture.loaded)).toBe(60);
+  expect(new URL(requests.at(-1)!).searchParams.get('num_turns')).toBe('100');
 });
 
 test('server batch limits still permit sequential preparation', async ({ page }) => {
   await open(page, 'count=24&ignore=1&delay=350');
   await prepare(page);
   expect(await page.evaluate(() => window.nativeFixture.loaded)).toBe(48);
-  expect(await page.evaluate(() => window.nativeFixture.requests)).toBe(4);
+  expect(await page.evaluate(() => window.nativeFixture.requests)).toBe(5);
 });
 
 test('slow pages do not cause repeated scroll probes while pending', async ({ page }) => {
@@ -171,7 +116,7 @@ test('repeating pagination stops with an explicit failure instead of looping', a
   await open(page, 'count=220&repeat=1');
   const saved = await anchor(page);
   await prepare(page, 'stalled');
-  expect(await page.evaluate(() => window.nativeFixture.requests)).toBe(2);
+  expect(await page.evaluate(() => window.nativeFixture.requests)).toBe(3);
   await expect(page.getByRole('status')).toContainText('did not make further loading progress');
   await expectAnchor(page, saved);
   await page.evaluate(() => window.nativeFixture.recover());
@@ -194,7 +139,7 @@ test('an unresponsive history edge times out without repeated scroll movement', 
   await page.waitForTimeout(1200);
   expect(await page.evaluate(() => window.nativeFixture.scrollEvents)).toBe(events);
   await expect(host(page)).toHaveAttribute('data-phase', 'stalled');
-  expect(await page.evaluate(() => window.nativeFixture.requests)).toBe(1);
+  expect(await page.evaluate(() => window.nativeFixture.requests)).toBe(2);
   await expectAnchor(page, saved);
 });
 
@@ -219,8 +164,8 @@ test('unrecognized responses never invent full history coverage', async ({ page 
 });
 
 test('short already prepared conversations need no pagination', async ({ page }) => {
-  await open(page, 'count=3'); await prepare(page);
-  expect(await page.evaluate(() => window.nativeFixture.requests)).toBe(1);
+  await open(page, 'count=3'); await prepare(page, 'loaded-no-native');
+  expect(await page.evaluate(() => window.nativeFixture.requests)).toBe(2);
 });
 
 test('restores a position inside an oversized answer in a 501-prompt conversation', async ({ page }) => {
