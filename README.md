@@ -1,101 +1,72 @@
 # GPT Navigator Helper
 
-Helps fix cases where ChatGPT’s native navigator fails to appear because conversation history has not fully loaded. The helper loads history automatically while working to preserve your reading position.
+Helps fix ChatGPT’s missing native navigator by automatically loading conversation history.
 
-**Version 0.6.4 · branch `main`.** The extension is entirely automatic. Its read-only Chrome popup shows:
+## Install from Chrome Web Store
 
-- **GPT Navigator Helper** and a brief introduction.
-- Whether the native navigator is visible.
-- How many prompts have been observed.
-- A brief explanation when the navigator is absent.
+**Pending approval.** The store link will be added here once the extension is available.
 
-There are no manual preparation, pause, resume, or stop buttons, and no extension window on the ChatGPT page. Closing the popup does not stop preparation.
+## Install (development)
 
-## Install
+1. Download [GPT Navigator Helper 0.6.4](https://github.com/sssstf0rest/GPT-Navigator-Helper/releases/download/v0.6.4/gpt-navigator-helper-0.6.4.zip) from [GitHub Releases](https://github.com/sssstf0rest/GPT-Navigator-Helper/releases).
+2. Extract the ZIP.
+3. Open `chrome://extensions` and enable **Developer mode**.
+4. Click **Load unpacked** and select the extracted folder containing `manifest.json`.
+5. Reload your ChatGPT tabs. Pin **GPT Navigator Helper** to the toolbar for quick access to its status panel.
 
-Requires **Chrome 152 or newer**. This is the tested release baseline; older Chrome versions have not been verified.
+To update, replace the files in your unpacked folder, click **Reload** on the extension’s card, and reload ChatGPT.
 
-1. Extract `releases/gpt-navigator-helper-0.6.4.zip`.
-2. In `chrome://extensions`, enable **Developer mode**, choose **Load unpacked**, and select the extracted folder containing `manifest.json`. Disable older copies of this extension.
-3. Reload ChatGPT tabs, then open a conversation in a wide desktop window. Preparation begins automatically when the page is ready and idle.
-4. To view status, click Chrome’s **Extensions** button and choose **GPT Navigator Helper**. You can pin it to the toolbar for direct access.
-5. Navigate using ChatGPT’s own prompt markers on the right.
+<details>
+<summary>Build from source</summary>
 
-For a source build, load `dist` as the unpacked extension. Reload ChatGPT after updating or disabling an extension: its early page hook remains until the document is replaced.
-
-## Prompt count and native visibility
-
-The observed ChatGPT implementation requires **at least five prompts**. The popup explains this for conversations with **four or fewer**, once complete, error-free captured history confirms the count. A small partial count during loading is not treated as proof that the conversation is too short.
-
-Unobserved history is shown as **—**, not zero. On unsupported tabs the navigator status is **Unavailable**. Other reasons for absence include ongoing history loading, a narrow or unsupported layout, a linked-message view, and a loading failure. Complete history does not bypass ChatGPT’s own mode or account conditions.
-
-## Automatic behavior
-
-The early hook requests at least `num_turns=100` on recognized initial history requests for the visible current conversation, preserving larger existing requests. The server may cap the batch size. A larger initial response can reduce subsequent paging but may take longer to render.
-
-When older history remains, the extension briefly exposes ChatGPT’s native history-loading sentinel using scoped sticky styles. ChatGPT fetches and prepends its own page; the extension restores those styles and waits for progress before another page. The extension never scrolls to the top or restores the viewport itself. It does not import private application modules, change React state, fabricate history flags, or fetch a separate history cache.
-
-Paging waits for a visible desktop view with hover support, at least 1024 CSS pixels of width, stable anchoring, and no detected active response. Message deep links are preserved. Typing, scrolling, touching, or clicking in the page ends the current attempt to avoid disturbing reading. After at least 2.5 seconds without interaction, preparation resumes automatically when the visible conversation is ready. Backgrounding also stops active work and permits recovery on return. There are at most three resumptions per captured history context. Network errors, stalled history, unsafe layout changes, and exhausted limits do not trigger retry loops. A fresh conversation/history load or reload starts a new budget.
-
-An already-issued ChatGPT request may still finish after interruption. The guard stops further preparation if the visible message shifts more than 8px or disappears for several frames; it cannot undo a shift the host already made.
-
-Automatic preparation is bounded to **60 seconds of active preparation and 20 additional pages shared across all resumptions**, with a **12-second progress deadline per triggered page**. Capture is limited to two readers, 16 MB/eight seconds per response clone, and 10,000 message identities.
-
-## Privacy and permissions
-
-The extension runs only on `https://chatgpt.com/*` and requests no additional Chrome API permissions. It has access to read and modify that site to provide the helper. It has no backend, analytics, API key, token extraction, or persistent conversation storage. Response bodies are parsed transiently for metadata; identities, counts, and history boundaries remain in tab memory. The popup receives only its small status snapshot and cannot send preparation commands.
-
-## Build and test
-
-Use Node.js 22.12 or newer:
+Requires Node.js 22.12 or newer.
 
 ```sh
+git clone https://github.com/sssstf0rest/GPT-Navigator-Helper.git
+cd GPT-Navigator-Helper
 npm ci
 npm run build
+```
+
+Load the generated `dist` folder using the steps above.
+
+To run the test suite:
+
+```sh
 npx playwright install chromium
 npm run check
 ```
 
-Tests load the real production extension in disposable Chromium and serve synthetic ChatGPT-origin data from a local fixture. The fixture actually fetches older pages and virtualizes rendered messages. Tests cover automatic loading, reading anchors, cancellation, limits, route changes, the read-only popup, active tabs, unknown counts, and the five-prompt threshold. See [compatibility notes](docs/compatibility.md) for evidence and limitations.
+</details>
 
-The manual controller and restoration code have been removed. `src/native/content.ts` owns automatic lifecycle, `seamless.ts` owns bounded loading, `panelState.ts` produces the read-only snapshot, and `src/popup/` renders it. Only the latest release ZIP is kept in `releases/`; older versions remain available in Git history.
+## Features
 
-## Changes in 0.6.0
+- **Automatic:** helps restore native navigation when incomplete history loading is the cause.
+- **Unobtrusive:** works to preserve your reading position and yields when you interact.
+- **Clear status:** shows navigator visibility, observed prompt count, and reasons for absence.
+- **Local processing:** no conversation uploads to the developer, analytics, or persistent conversation storage.
 
-- Automatic recovery after user interaction or backgrounding, with a shared loading budget and at most three resumptions.
-- Clear recovery messages and a neutral explanation when history is complete but native navigation is unavailable.
-- Chrome 152 minimum aligned with the tested baseline.
-- 20 unit tests and 25 browser cases passed across full and targeted runs. Live 0.6.0 checks cover extension updating, the actual toolbar popup, reload guidance, and one/four-prompt conversations. The user completed the broader manual checklist on 0.5.0; that does not establish live recovery behavior in 0.6.0.
+## How it works
 
-## Changes in 0.6.1
+ChatGPT’s native prompt navigator can fail to appear when earlier conversation history has not loaded. The helper requests a larger initial history batch and, when needed, triggers ChatGPT’s own earlier-history loader automatically.
 
-Visual update only: neutral white/charcoal themes, softer borders, a compact visibility badge, and locally bundled Geist variable typography. The popup follows the active conversation theme; it uses the system theme while connecting. Automatic loading and recovery are unchanged from 0.6.0. All six existing popup browser tests passed, and light/dark/short-history screenshots were reviewed.
+Once eligible history is available, ChatGPT can show its native navigator. Use its prompt markers to move through the conversation. Open the extension’s toolbar popup to check status; there are no manual preparation controls.
 
-Geist Latin variable font: @fontsource-variable/geist 5.3.0, copyright the Geist Project Authors, SIL Open Font License 1.1. The license is included in `public/licenses/Geist-OFL.txt` and the release package. Fonts load locally without third-party requests.
+Preparation yields during interaction and can resume when the page is idle. It uses bounded loading and recovery attempts to avoid endless retries.
 
-## Repository layout
+## Limitations
 
-- `src/` — extension source and bundled popup font.
-- `tests/` — unit tests, browser tests, and conversation fixtures.
-- `scripts/` — build verification and store-image generator.
-- `icons/` — icon SVG and PNG sizes.
-- `public/licenses/` — licenses copied into the extension build.
-- `docs/` — privacy policy for GitHub Pages and compatibility notes.
-- `store-assets/` — final listing images, upload guide, and checksums.
-- `releases/` — latest packaged extension and checksum.
+- **Chrome 152 or newer** is required. The extension runs only on `chatgpt.com`.
+- **At least five user prompts** are required by the observed ChatGPT navigator implementation. Shorter conversations may correctly show no navigator.
+- Automatic preparation needs a visible desktop tab at least **1024 CSS pixels wide**. Active replies, message deep links, or unsupported layouts can defer or prevent it.
+- Loading history does not override ChatGPT’s account, layout, or conversation eligibility rules. Site changes may affect compatibility.
+- Loading is limited to **60 seconds of active preparation, 20 additional pages, and three resumptions**. Errors or exhausted limits may require a page reload.
+- The helper aims to preserve your position, but ChatGPT’s own rendering may still move the page.
 
-`dist/`, `output/`, test reports, and generated store-image sources are ignored. Regenerate the extension with `npm run build` and artwork with `node scripts/generate-store-assets.mjs`. The three small working-note files at the root are retained for the project’s planning workflow.
+See the [compatibility notes](docs/compatibility.md) and [privacy policy](docs/privacy-policy.html) for details. Report problems through [GitHub Issues](https://github.com/sssstf0rest/GPT-Navigator-Helper/issues).
 
-[Privacy policy](docs/privacy-policy.html) · [Store image upload guide](store-assets/README.md)
+## License
 
-## Changes in 0.6.2
+A project license has not been specified yet. The bundled Geist font is licensed under the [SIL Open Font License 1.1](public/licenses/Geist-OFL.txt).
 
-Fixed missing extension and toolbar icons by declaring the supplied 16, 32, 48, and 128px PNGs in the manifest. Build verification now checks both declarations, packaged PNG dimensions, and byte equality with the supplied icons. Existing popup and automatic preparation behavior are unchanged. To update, extract the new ZIP and load its folder in Chrome, or replace the contents of your existing unpacked folder and click **Reload** on its card in `chrome://extensions`.
-
-## Changes in 0.6.3
-
-Reduced transparent icon margins so the mark appears larger in Chrome. The 16/32/48px icons now use 1/2/3px minimum padding; the 128px icon uses 16px. All PNGs are rendered directly from the unchanged vector master. Regenerate them with `node scripts/generate-icons.mjs` after installing Playwright Chromium, then run `npm run build`. Automatic preparation and popup behavior are unchanged.
-
-## Changes in 0.6.4
-
-Rephrased the manifest, popup, listing, and promotional copy around helping fix a missing ChatGPT native navigator caused by incomplete history loading. Runtime behavior, privacy practices, and the Chrome 152 minimum are unchanged.
+GPT Navigator Helper is an independent extension, not affiliated with or endorsed by OpenAI.

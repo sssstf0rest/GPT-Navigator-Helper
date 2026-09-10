@@ -29,3 +29,7 @@ No commit or push requested. Historical investigation details remain in Git hist
 ## Light store artwork
 - [x] Change every listing image to a white/light composition, including popup captures; keep extension themes unchanged.
 - [x] Regenerate and inspect all five images, verify dimensions/checksums, and prepare the authorized commit/push.
+
+## Publication README
+- [x] Rewrite README in the requested order, with pending Store installation and verified GitHub release download.
+- [x] Verify local links and license wording; prepare the authorized commit/push.

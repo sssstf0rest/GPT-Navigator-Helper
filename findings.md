@@ -11,3 +11,4 @@
 - Publication reference: docs/chrome-web-store-submission.txt. User accepts Chrome 152 minimum and already hosts the policy; exact public URL has not been supplied. Chrome guidance requires disclosure of local data handling (https://developer.chrome.com/docs/webstore/program-policies/user-data-faq).
 - Version 0.6.4 positions the helper as a fix for missing native navigation caused by incomplete history loading. Native eligibility limitations remain explicit; functionality and data practices are unchanged.
 - All five store images now use white backgrounds and light popup captures. The generator automatically refreshes asset-manifest.json; extension light/dark functionality and release 0.6.4 are unchanged.
+- GitHub release v0.6.4 and its ZIP asset are published and verified through GitHub CLI. Chrome Web Store installation remains marked pending per user request. No project LICENSE file exists; README does not invent a license grant.

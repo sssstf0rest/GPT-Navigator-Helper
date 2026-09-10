@@ -35,3 +35,7 @@ Version 0.6.1 includes automatic recovery, status wording, themed popup, privacy
 ## Light store artwork
 - Converted the promotional tiles and screenshots to white/light styling, including replacing the dark popup comparison with a single light panel composition. Regenerated all five PNGs and their checksums; updated the asset guide.
 - Reviewed every image visually and verified dimensions, byte counts, and SHA-256 values. Generator syntax passed. No extension code/package changes; version remains 0.6.4. User authorized commit/push.
+
+## Publication README
+- Replaced the lengthy README with installation, features, how it works, limitations, and license sections. Kept source-build instructions in a collapsible block and linked the verified v0.6.4 GitHub release asset.
+- Verified section order and local links. No project license is present; retained accurate Geist license attribution. Documentation-only change; no runtime tests needed. User authorized push.
