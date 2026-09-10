@@ -1,13 +1,18 @@
-<img src="icons/icon128.png" alt="GPT Navigator Helper icon" width="80" height="80">
+<p align="center">
+  <img src="icons/icon128.png" alt="GPT Navigator Helper icon" width="128">
+</p>
 
-# GPT Navigator Helper
+<h1 align="center">GPT Navigator Helper</h1>
 
-Helps fix ChatGPT’s missing native navigator by automatically loading conversation history.
+<p align="center">
+  Helps fix ChatGPT’s missing native navigator by automatically loading conversation history.
+</p>
 
 ## Install from Chrome Web Store
 
 **Pending approval.** The store link will be added here once the extension is available.
 
+<!--
 ## Install (development)
 
 1. Download [GPT Navigator Helper 0.6.4](https://github.com/sssstf0rest/GPT-Navigator-Helper/releases/download/v0.6.4/gpt-navigator-helper-0.6.4.zip) from [GitHub Releases](https://github.com/sssstf0rest/GPT-Navigator-Helper/releases).
@@ -40,6 +45,7 @@ npm run check
 ```
 
 </details>
+-->
 
 ## Features
 
