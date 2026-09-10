@@ -1,54 +1,44 @@
-# Seamless preparation compatibility evidence
+# GPT Navigator Helper compatibility
 
-Version 0.3.0, branch `seamless-preparation`. This document separates local extension tests, observed live behavior, and remaining live validation.
+Version 0.5.0, branch `seamless-preparation`.
 
-## Live evidence
+## Current scope
 
-The user confirmed their four-prompt conversations lack the native navigator, while tested conversations with at least five prompts work. Read-only inspection of two provided conversations agreed: four user turns, no older-history cursor, and a false native eligibility predicate. Captured public client source requires at least five eligible user turns plus history, layout, and mode gates.
+The extension is automatic-only. Manual history scrolling/restoration, pause state, popup commands, and their retired tests have been removed. The popup contains the product name, intro, native visibility, observed prompt count, and a short absence explanation. No helper DOM is injected into ChatGPT.
 
-A bounded single-page probe in an existing long ChatGPT conversation exercised the same scoped sticky-sentinel mechanism used by the new automatic loader. With the normal 1470px-wide viewport, it triggered **one native older-history request**, recording **0px maximum visible-message anchor drift**, **0 missing frames**, and **344 sampled animation frames**. The scroll offset increased from 40,149 to 138,341 because the host prepended history while keeping the same message in view. Native controls remained absent because more history remained. The temporary styles and request observer were restored after six seconds; DevTools was closed afterward. No prompts were submitted or conversation shared.
+The popup declares `action.default_popup` and uses `chrome.tabs.query` plus `sendMessage` to read the active tab’s top-frame state. It needs no additional permissions, reads no sensitive tab fields, accepts no mutation commands, and stops polling when closed. Tab-owned preparation continues independently. The old manual, stop, and toggle-automatic messages are ignored.
 
-This establishes one live invocation of the loading mechanism. It does **not** establish a complete multi-page run of the installed 0.3.0 extension, cold-start batch handling on all accounts, every layout, or successful native jumps in every conversation. Those remain live trial checks.
+Chrome API references: [action popup](https://developer.chrome.com/docs/extensions/reference/api/action), [tabs](https://developer.chrome.com/docs/extensions/reference/api/tabs), [message passing](https://developer.chrome.com/docs/extensions/develop/concepts/messaging).
 
-The captured source uses `data-testid="conversation-pagination-sentinel"` with an IntersectionObserver rooted in the conversation scroller and an 80px upper margin. Its loader compensates the scroll position after a synchronous prepend. Native buttons retain `data-toc-item-index` and `data-toc-active` when their labels become prompt text. These are observed implementation details, not public supported extension APIs.
+## Native minimum
 
-## Production-extension fixture validation
+The captured ChatGPT client and the user’s live tests agree on a five-user-turn minimum. Two previously inspected four-prompt conversations had complete history and failed the host’s native eligibility predicate. The user subsequently confirmed the 0.3.0 seamless loader and 0.4.0 popup work well.
 
-The test runner loads the built extension into disposable Chromium and serves synthetic ChatGPT-origin responses from the local fixture. The fixture starts with a limited newest-history window, actually fetches older pages, prepends through its own loader, compensates the host reading anchor, and virtualizes mounted messages. Its native rail requires completed history and five prompts. The fixture’s observer dependencies match the captured host cursor/enabled/error behavior; it does not recreate the observer merely because a request ended.
+The 0.5.0 popup explains the minimum only when captured history is complete, no request is pending, no capture issue exists, and fewer than five prompts are observed. Unknown or partially loaded history does not establish that a conversation is too short. The panel displays an unknown count as an em dash. At five or more prompts, absent navigation can still depend on layout, conversation mode, or other host conditions. Actual visible controls take precedence over an inferred absence reason.
 
-Covered automatic behavior includes:
+## Validation
 
-- An early 100-turn initial request followed by two expanded older requests for 220 prompts, with per-frame anchor sampling, no travel to the top, and fixture-native first/middle/last navigation.
-- A complete first response, server caps, huge answers, native labels containing prompt text, and the four-prompt minimum.
-- Immediate Stop, wheel interruption, Pause/Resume across routes, and scoped temporary-style cleanup after in-flight requests.
-- Simulated visible/hidden lifecycle handling in both MAIN and ISOLATED script worlds, streaming deferral, responsive native visibility, stale route responses, and message deep links.
-- Incompatible sentinel containment, disabled anchoring, changed reading geometry, failed requests, repeated cursors, bounded paging, and explicit manual fallback.
+The final `npm run check` passed **17 unit tests and 22 production-extension browser tests**, plus strict TypeScript, build, and manifest/popup verification. The browser suite completed in 1.4 minutes.
 
-The preserved manual suite covers long conversations, anchor restoration, delayed loading, Stop and return, interaction, nested routes, same-URL replacement, unknown payloads, transient recovery, hidden/disappearing native controls, keyboard access, and light/dark UI. Unit tests cover request scoping/options, capture identities, graph ancestry, linked pagination, malformed bridge states, and controller state changes during native waits.
+The production-extension browser suite tests initial batching, real older-page requests, server caps, large answers, native first/middle/last navigation, per-frame anchor stability, typing/wheel interruption, scoped style cleanup, failed/repeated cursors, incompatible layouts, streaming deferral, routes, message deep links, and page limits.
 
-The final `npm run check` passed **18 unit tests and 36 production-extension browser tests**, plus strict TypeScript, production build, and manifest/standalone-hook verification. The browser suite completed in 2.4 minutes. Fixture-native clicks establish behavior of the fixture, not ChatGPT’s own navigation code.
+Popup cases cover closing/reopening during loading, active-tab switches, unsupported tabs, the absence of buttons and diagnostics, rejection of obsolete commands, short-conversation explanations, five-prompt visibility, unknown capture, and light/dark rendering. Unit tests cover metadata/history continuity, request scoping, bridge validation, and the short-history explanation boundary.
 
-## Completeness and boundaries
+The tests use disposable Chromium, the real extension, and a local synthetic ChatGPT-origin fixture. The popup document uses real extension messaging, but the suite does not operate Chrome’s native Extensions menu. Visibility is simulated in both MAIN and ISOLATED script worlds because Playwright keeps test pages visible.
 
-- Flat history is complete only after a recognized initial page and cursor-linked older pages end with explicit `has_previous_page=false`, without conflicting branch metadata. Graph history must reach an explicit root through an intact selected parent chain. Unknown structures remain unknown.
-- Automatic initial expansion applies only to a validated current-conversation plural `/backend-api/conversations/:id` GET. Prefetched requests issued before the route changes may be missed; cached navigation without a new captured initial response remains unverified. Deep links and targeted initial windows are skipped.
-- Automatic pagination requires the known sentinel inside the actual scroll area, compatible containment, a visible tab, a desktop hover layout at least 1024px wide, and stable anchoring without detected streaming. Unsupported layouts stop or defer; there is no automatic scroll fallback.
-- Temporary inline sentinel properties are restored on request start, cancellation, route change, failure, timeout, and completion. Other inline styles are preserved. The extension does not rewrite the host history store or render another navigator.
-- The reading guard stops further paging above 8px of sampled message-anchor drift or after several missing-anchor frames. It cannot undo shifts, delayed image/math reflow, or a response already in flight. Manual restoration can also fail explicitly under changing content or virtualizer behavior.
-- Automatic runs allow 60 seconds and at most 20 additional captured pages; each triggered page gets at most 12 seconds to progress. A final permitted page can still report completion. Manual runs allow three minutes, 80 pages, and 160 edge steps. Capture permits two readers, 16 MB/eight seconds per clone, and 10,000 identities.
-- Pause is per tab and survives SPA conversation changes, but reload resets automatic mode to enabled. It cannot retract a first batch already issued. Temporary expansion during an active run has a renewable ten-second lease.
-- Interaction ends the current automatic attempt. It does not automatically retry on the same unchanged history context. A new conversation/history load or Pause/Resume can start another attempt. Backgrounding cancels active work and permits a recheck on foregrounding.
-- There is no XHR or SSE interception. Same-URL branch edits without a captured replacement initial request or user interaction may not be identifiable. A native history error may require ChatGPT’s own retry control or a reload before manual loading can work again.
-- Initial expansion may delay the first render, increase memory/bandwidth, or be capped by the server. Complete captured history does not bypass native minimum-turn, account, mode, responsive, or feature gates, and visible controls do not prove all native jumps work.
+Earlier live evidence includes a bounded native pagination-sentinel test: one older page loaded with 0px maximum visible-message drift and no missing anchor across 344 frames. This supports the mechanism in that conversation, not a universal guarantee of stable layout or working native jumps. User-confirmed previous release behavior and fixture evidence remain distinct from measured testing of the installed 0.5.0 build.
 
-## Remaining live trial
+## Boundaries
 
-After loading the unpacked 0.3.0 folder and reloading ChatGPT:
+- Recognized flat history must form a cursor-linked chain from its initial page to explicit completion. Graph history must reach an explicit root through an intact selected parent chain. Unknown payloads remain unknown.
+- Early expansion applies to recognized current-conversation initial requests. Prefetched/cached navigation without a captured initial response may remain unverified. Targeted message windows and deep links are preserved.
+- Native pagination relies on the known sentinel inside a compatible scroll area. The loader waits for a visible desktop hover layout at least 1024px wide with stable anchoring and no detected streaming. It stops or defers on unsupported conditions and never falls back to manual scrolling.
+- Scoped sentinel styles are restored on request start, cancellation, route change, errors, timeout, and completion. Already-issued host requests may finish after interruption. The 8px anchor guard cannot undo an existing layout shift or late rich-content reflow.
+- Each automatic attempt allows 60 seconds and 20 additional captured pages, with a 12-second progress deadline for each triggered page. Capture allows two readers, 16 MB/eight seconds per clone, and 10,000 identities. The final permitted page may still complete successfully.
+- User interaction ends the current attempt. A fresh conversation/history load or reload can start another. Backgrounding permits a recheck on foregrounding. There is no hidden manual or pause mode.
+- There is no XHR/SSE interception or private state mutation. Some branch changes without a captured initial request may not be identifiable. Host changes can invalidate selectors, payload assumptions, or eligibility rules.
+- Larger batches may delay first rendering, use more memory/bandwidth, or be capped. Visible native controls do not guarantee every ChatGPT-native jump succeeds.
 
-1. Open a long conversation from both a fresh page load and the sidebar. Check whether preparation begins automatically and the message being read stays still.
-2. Verify the true oldest prompt is reachable using the native rail, then try a middle and newest prompt.
-3. Stop during a request, type or scroll, and verify no later automatic page is triggered for that run.
-4. Pause, switch conversations, resume, and switch tabs while loading. Confirm expected lifecycle behavior.
-5. Compare a four-prompt conversation, a supported long desktop conversation, and a narrow/streaming view. Record the helper’s status and compatibility details if it stops.
+## Live trial
 
-Keep these observations separate from local passing tests. No new prompts or shared links are needed to run this trial.
+After loading 0.5.0 and reloading ChatGPT, open the extension from Chrome’s Extensions menu. Confirm the panel has only the requested information, compare three/four/five-prompt conversations, and verify the oldest native entry in a long chat. Closing the popup should leave automatic loading running; typing or scrolling should return control to the reader. Reload a stopped conversation to retry. No new prompts or shared links are required.

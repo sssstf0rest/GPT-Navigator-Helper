@@ -1,3 +1,23 @@
+# Automatic-only minimal panel
+
+1. Remove manual preparation and popup commands; retain bounded automatic loading — complete.
+2. Reduce panel to GPT NAVIGATOR HELPER, intro, native visibility, observed prompts, and truthful absence explanation — complete; light/dark screenshots inspected.
+3. Update automatic/popup tests, verify, document, and package 0.5.0 — complete: 17 unit/22 browser tests, typecheck/build, and eight-file release ZIP integrity checks passed.
+
+The verified native minimum is five prompts: explain absence at four or fewer only once complete history is known. Preserve the uncommitted 0.4.0 work and release artifact.
+
+---
+
+# Toolbar popup implementation
+
+1. Replace the injected window with a content-script state service and extension popup — complete.
+2. Adapt real-extension tests to popup messaging and verify background operation, tab scoping, controls, and absent page UI — complete: 18 unit/40 browser tests passed; tightened snapshot regression also passed.
+3. Update documentation and package version 0.4.0 — complete: eight-file unpacked/ZIP package verified against dist, instructions updated, light/dark popup screenshots inspected.
+
+Keep automatic preparation and manual behavior unchanged. Add no permissions. Popup commands target the active conversation, validate their context, and do not depend on the popup remaining open.
+
+---
+
 # Seamless preparation implementation
 
 ## Objective
@@ -126,3 +146,17 @@ Run the prototype against a user-selected authenticated long ChatGPT conversatio
 - Implementation discovery: a glob search encountered no matching AGENTS file; repository inventory was checked separately. A zsh unmatched /tmp glob was replaced by a bounded directory inventory; the Luna clone source prefix is being located before further reads.
 - Initial file discovery returned exit 1 because no matching repository files were found; inspect the directory and git status separately.
 - One browser fetch of a Toolkit source permalink failed; use the repository-relative path verified by the source reviewer instead of assuming a src/ prefix.
+
+## Publication readiness assessment — 2026-09-10
+- Scope: review current product and official Chrome Web Store requirements, excluding icons; no implementation or publication.
+- Inspect manifest, automatic lifecycle, status copy, and recorded validation — complete.
+- Verify official privacy, image, and reviewer-instruction requirements — complete.
+- Prioritize required submission materials and recommended product hardening — complete.
+
+## Release hardening — 2026-09-10
+1. Implement bounded idle recovery and honest status wording — in progress.
+2. Add recovery/lifecycle regressions and run full checks — pending.
+3. Test installed Chrome lifecycle and live conversations; establish supported Chrome baseline — pending.
+4. Package and document verified evidence and remaining limits — pending.
+
+No publication, icons, commit, or push in this task. Existing uncommitted work is preserved.

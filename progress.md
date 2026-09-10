@@ -73,3 +73,28 @@
 
 ## Publish seamless preparation
 - User explicitly requested committing and pushing the current changes. Reviewed the changed files, synthetic experiment artifacts, package integrity, and credential patterns. Publishing the tested 0.3.0 source, tests, documentation, screenshots, and release artifacts on seamless-preparation.
+
+## Toolbar popup
+- User confirms seamless preparation works well and requests moving all controls from the web page into the Chrome extension action popup. Retaining the existing branch and automatic loader; replacing the injected UI with a runtime messaging state service.
+- Replaced Shadow DOM UI with in-memory tab state and a manifest action popup. Automatic preparation remains tab-owned. Three initial popup integration cases passed. Full check initially caught a possibly undefined active tab in a test; added an explicit guard and restarted the suite. Reviewed the light popup screenshot and updated installation/compatibility docs for 0.4.0.
+- The first full popup run exposed stale test snapshots after the fixture switched conversations: old and new states both had one batch, so the test clicked before popup polling caught up. The document/conversation guard correctly rejected those commands. Updated manual test setup to wait for the new prompt count before acting; targeted regressions are running.
+- Targeted manual regressions passed after correcting snapshot timing. Full rerun has passed all 18 manual browser cases, including keyboard use, close/reopen, and light/dark screenshots. The early MAIN history hook is byte-identical to the working 0.3.0 release; no automatic pagination algorithm changes were made.
+- Popup-specific tests passed: declared action URL, preparation continuing after popup closure, independent tab preferences, unsupported-tab recovery, and stale-context rejection. Packaged 0.4.0 and verified archive integrity/byte equality with dist; no new permissions. Tightened the repeated incompatible-layout test to discard its old popup snapshot before checking the second case.
+- Full 0.4.0 check passed 18 unit tests and 40 browser tests in 2.8 minutes, plus typecheck/build/package verification. ZIP: 14,364 bytes; SHA-256 5c5b76b68e32fa0bc1fbfae6acaf1f1c86483ea06f8e5a17765ae0f3855f2171. Updated final documentation. Running the tightened incompatible-layout case separately; production source and package are unchanged.
+- Tightened incompatible-layout regression passed (both layouts exercised against a fresh popup snapshot). Documentation and whitespace checks passed. Implementation and 0.4.0 package are ready in the local seamless-preparation working tree.
+
+## Automatic-only panel
+- User confirms popup build works and requests removing manual mode and all controls. Simplifying the panel and extension to automatic-only behavior. Using the verified five-prompt threshold (four or fewer) and distinguishing incomplete capture from a genuinely short conversation.
+- Removed manual preparation, position restoration, pause state, and popup mutation messages. Panel now shows only the requested name, intro, visibility, observed count, and absence explanation. Removed retired manual tests and added minimum-threshold/unknown-capture and read-only popup coverage. Initial build and 17 unit tests passed; browser suite is running.
+- Inspected short-conversation, ready, and dark minimal-panel screenshots. The four-or-fewer explanation is shown only with complete, error-free captured history.
+- Final 0.5.0 check passed 17 unit tests and 22 production-extension browser tests (1.4 minutes), strict typecheck/build, and manifest/popup verification. Created gpt-navigator-helper-0.5.0 unpacked folder and ZIP (10891 bytes), verified byte equality against dist and no permissions/buttons/diagnostic controls. SHA-256: 5410c592f79d00d3b99875533442bb446ef818c033f4182dc23c9ab65189c7a0. Updated docs and completed the local automatic-only implementation.
+
+## Publication readiness assessment — 2026-09-10
+- Reviewed current automatic-only implementation and official Chrome Web Store documentation. Identified privacy/disclosure and non-icon listing assets as submission work; interruption recovery, honest status copy, and installed-Chrome compatibility/performance checks as recommended product work. Recorded findings only; no runtime changes, commit, push, or publication.
+
+- Recovery implementation: 20 unit tests passed. Typecheck caught async history narrowing across the loader await; read the latest mutable state through an accessor before deciding recovery. Actual Chrome version is 152.0.7977.83; installed helper is 0.5.0 from Desktop.
+
+- Full 24-case browser suite passed (2.1m). Added two expanded lifecycle/budget cases afterward. Stopped an accidentally overlapping targeted run to avoid a shared fixture-server race; rerunning sequentially. Backed up the installed Desktop 0.5.0 folder locally, then updated its package files to 0.6.0 for actual Chrome update checks.
+- Sequential targeted checks passed: same-tab foreground recovery and hidden SPA navigation, and the shared twenty-page budget after interruption (2 cases, 29.1s). Across full/targeted runs all 25 current browser cases passed.
+- Actual Chrome update test: reloaded existing extension ID to 0.6.0 using Chrome's extension manager; existing ChatGPT tab showed reload guidance, then after page reload correctly showed one prompt and the revised short-history explanation. Toolbar Extensions-menu popup is verified on actual Chrome 152.
+- CUA adapter uses positional click IDs and named keys Escape/Return; invalid object-click, ESC, and Enter calls performed no action. A stale-state action was rejected and resolved by refreshing accessibility state.

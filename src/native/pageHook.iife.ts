@@ -9,7 +9,6 @@ function install(): void {
   let state = emptyHistory(conversationIdFromUrl(location.href));
   let chain = new HistoryChain();
   let active = false;
-  let automatic = true;
   let boostUntil = 0;
   let latestRequest = 0;
   const readers = new Set<ReadableStreamDefaultReader<Uint8Array>>();
@@ -39,10 +38,6 @@ function install(): void {
     if (data?.channel !== CHANNEL) return;
     route();
     if (data.kind === 'hello') send();
-    if (data.kind === 'automatic' && typeof data.enabled === 'boolean') {
-      automatic = data.enabled;
-      return;
-    }
     if (data.kind !== 'prepare' || data.conversationId !== state.conversationId || data.generation !== state.generation || typeof data.enabled !== 'boolean') return;
     if (data.enabled && !active && ['http-error', 'capture-unavailable', 'stalled'].includes(state.issue ?? '')) {
       state.issue = null;
@@ -60,8 +55,7 @@ function install(): void {
     const meta = historyRequest(input, init, location.href);
     if (!meta) return originalFetch.call(this, input, init);
     if (Date.now() > boostUntil) { active = false; state.boosted = false; }
-    const preference = document.documentElement?.dataset.nativeHelperAutomatic;
-    const early = (preference ? preference === 'on' : automatic) && document.visibilityState === 'visible' && canExpandInitial(input, init, location.href);
+    const early = document.visibilityState === 'visible' && canExpandInitial(input, init, location.href);
     const args = active || early ? expandHistoryRequest(input, init, location.href) : [input, init] as const;
     const generation = state.generation;
     if (meta.kind === 'initial') {

@@ -1,14 +1,15 @@
-import { test, expect, host, anchor, expectAnchor } from './support';
+import { test, expect, host, panel, openPanel, anchor, expectAnchor } from './support';
 import type { Page } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 
 async function openAutomatic(page: Page, query = 'count=220&delay=450') {
   await page.goto(`https://chatgpt.com/c/fixture-a?${query}`);
   await page.waitForFunction(() => window.nativeFixture?.ready);
-  await expect(host(page)).toBeAttached();
+  await openPanel(page);
+  await expect(page.locator("#native-navigator-helper")).toHaveCount(0);
 }
 async function details(page: Page) {
-  await page.getByRole('button', { name: 'Open native navigator helper' }).click();
+  await openPanel(page);
 }
 async function cleanTrigger(page: Page) {
   expect(await page.locator('[data-testid="conversation-pagination-sentinel"]').evaluateAll(els =>
@@ -19,14 +20,14 @@ test('opens with a larger first batch and automatically loads remaining history 
   const requests: string[] = [];
   page.on('request', r => { if (r.url().includes('/backend-api/')) requests.push(r.url()); });
   await openAutomatic(page);
-  await expect(page.getByRole('region', { name: 'Native navigator helper' })).toBeHidden();
+  await expect(page.locator('#native-navigator-helper')).toHaveCount(0);
   const saved = await anchor(page);
   const initialTop = await page.evaluate(() => { window.nativeFixture.startSampling(); return window.nativeFixture.scrollTop; });
   await expect(host(page)).toHaveAttribute('data-phase', 'automatic-loading');
   await mkdir('output/playwright', { recursive: true });
-  await page.screenshot({ path: 'output/playwright/seamless-preparing.png' });
+  await host(page).screenshot({ path: 'output/playwright/minimal-preparing.png' });
   await expect(host(page)).toHaveAttribute('data-phase', 'ready');
-  await page.screenshot({ path: 'output/playwright/seamless-ready.png' });
+  await host(page).screenshot({ path: 'output/playwright/minimal-ready.png' });
   await expectAnchor(page, saved);
   const samples = await page.evaluate(() => window.nativeFixture.anchorSamples);
   expect(samples.length).toBeGreaterThan(10);
@@ -49,8 +50,9 @@ test('a complete first response needs no later pagination and changed native lab
   expect(await page.evaluate(() => window.nativeFixture.requests)).toBe(1);
   expect(await page.locator('button[data-toc-item-index]')).toHaveCount(30);
   await details(page);
-  await expect(host(page).locator('pre')).toContainText('"nativeControls": 30');
-  await page.screenshot({ path: 'output/playwright/seamless-details.png' });
+  await expect(host(page).locator('.prompts')).toHaveText('30');
+  await expect(host(page).locator('.visibility')).toHaveText('Visible');
+  await host(page).screenshot({ path: 'output/playwright/minimal-details.png' });
 });
 
 test('four-prompt conversations explain the native minimum without trying to scroll', async ({ page }) => {
@@ -58,7 +60,7 @@ test('four-prompt conversations explain the native minimum without trying to scr
   const saved = await anchor(page);
   await expect(host(page)).toHaveAttribute('data-phase', 'loaded-no-native');
   await details(page);
-  await expect(page.getByRole('status')).toContainText('requires at least 5 user turns');
+  await expect(panel(page).getByRole('status')).toContainText('with at least 5 prompts');
   expect(await page.evaluate(() => window.nativeFixture.requests)).toBe(1);
   await expectAnchor(page, saved);
 });
@@ -72,25 +74,28 @@ test('automatic loading honors server caps and keeps a position inside a huge an
   expect(await page.evaluate(() => window.nativeFixture.requests)).toBe(6);
 });
 
-test('Stop restores sentinel styles and never starts another page after an in-flight response', async ({ page }) => {
+test('typing releases styles immediately, waits for idle, then recovers without reloading', async ({ page }) => {
   await openAutomatic(page, 'count=400&delay=1500');
   const saved = await anchor(page);
   await page.waitForFunction(() => window.nativeFixture.pending);
-  await page.getByRole('button', { name: 'Stop automatic preparation', exact: true }).click();
-  await expect(host(page)).toHaveAttribute('data-phase', 'cancelled');
+  await page.keyboard.press('a');
+  await expect(host(page)).toHaveAttribute('data-phase', 'recovering');
   await cleanTrigger(page);
   await page.waitForFunction(() => !window.nativeFixture.pending);
   await expectAnchor(page, saved);
   const count = await page.evaluate(() => window.nativeFixture.requests);
   await page.waitForTimeout(900);
   expect(await page.evaluate(() => window.nativeFixture.requests)).toBe(count);
+  await expect(host(page)).toHaveAttribute('data-phase', 'ready');
+  await expectAnchor(page, saved);
+  expect(await page.evaluate(() => window.nativeFixture.requests)).toBe(4);
 });
 
 test('user scrolling immediately ends automatic loading without restoration over the user', async ({ page }) => {
   await openAutomatic(page, 'count=400&delay=1200');
   await page.waitForFunction(() => window.nativeFixture.pending);
   await page.locator('main').hover(); await page.mouse.wheel(0, -350);
-  await expect(host(page)).toHaveAttribute('data-phase', 'cancelled');
+  await expect(host(page)).toHaveAttribute('data-phase', 'recovering');
   await cleanTrigger(page);
   await page.waitForFunction(() => !window.nativeFixture.pending);
   const top = await page.evaluate(() => window.nativeFixture.scrollTop);
@@ -98,11 +103,17 @@ test('user scrolling immediately ends automatic loading without restoration over
   await page.waitForTimeout(900);
   expect(await page.evaluate(() => window.nativeFixture.requests)).toBe(count);
   expect(await page.evaluate(() => window.nativeFixture.scrollTop)).toBe(top);
+  const saved = await anchor(page);
+  await expect(host(page)).toHaveAttribute('data-phase', 'ready');
+  await expectAnchor(page, saved);
 });
 
 test('unsupported and constrained sentinel layouts stop without automatic scrolling fallback', async ({ page }) => {
   for (const option of ['legacy=1', 'constrained=1']) {
     await openAutomatic(page, `count=220&${option}`);
+    // Both cases end in the same phase. Reopen the popup document so a previous
+    // conversation snapshot cannot satisfy the second case before its loader runs.
+    await panel(page).reload();
     const saved = await anchor(page);
     await expect(host(page)).toHaveAttribute('data-phase', 'incompatible');
     expect(await page.evaluate(() => window.nativeFixture.requests)).toBe(1);
@@ -152,26 +163,12 @@ test('message deep links preserve their original request and do not start automa
   const urls: string[] = [];
   page.on('request', r => { if (r.url().includes('/backend-api/')) urls.push(r.url()); });
   await openAutomatic(page, 'count=220&message=target-message');
-  await expect(host(page)).toHaveAttribute('data-phase', 'deferred');
+  await expect(host(page)).toHaveAttribute('data-phase', 'deep-link');
   expect(urls).toHaveLength(1);
   expect(new URL(urls[0]!).searchParams.has('num_turns')).toBe(false);
   expect(await page.evaluate(() => window.nativeFixture.loaded)).toBe(12);
 });
 
-test('Pause ends an active run, stays paused across routes, and Resume prepares the current conversation', async ({ page }) => {
-  await openAutomatic(page, 'count=400&delay=1200');
-  await page.waitForFunction(() => window.nativeFixture.pending);
-  await details(page);
-  await page.getByRole('button', { name: 'Pause automatic preparation' }).click();
-  await expect(host(page)).toHaveAttribute('data-phase', 'paused');
-  await cleanTrigger(page);
-  await page.evaluate(() => window.nativeFixture.changeRoute('fixture-b', 'count=150&delay=80'));
-  await page.waitForTimeout(1500);
-  expect(await page.evaluate(() => window.nativeFixture.loaded)).toBe(12);
-  await page.getByRole('button', { name: 'Resume automatic preparation' }).click();
-  await expect(host(page)).toHaveAttribute('data-phase', 'ready');
-  expect(await page.evaluate(() => window.nativeFixture.earliest)).toBe('fixture-b-m0');
-});
 
 test('visibility lifecycle stops a run and leaves hidden-route initial requests unchanged', async ({ page, context }) => {
   await openAutomatic(page, 'count=400&delay=1200');
@@ -196,8 +193,16 @@ test('visibility lifecycle stops a run and leaves hidden-route initial requests 
   };
   await page.waitForFunction(() => window.nativeFixture.pending);
   await visibility(true);
-  await expect(host(page)).toHaveAttribute('data-phase', 'cancelled');
+  await expect(host(page)).toHaveAttribute('data-phase', 'recovering');
   await cleanTrigger(page);
+  await page.waitForFunction(() => !window.nativeFixture.pending);
+  const hiddenRequests = await page.evaluate(() => window.nativeFixture.requests);
+  await page.waitForTimeout(3000);
+  expect(await page.evaluate(() => window.nativeFixture.requests)).toBe(hiddenRequests);
+  await visibility(false);
+  await expect(host(page)).toHaveAttribute('data-phase', 'ready');
+  expect(await page.evaluate(() => window.nativeFixture.loaded)).toBe(800);
+  await visibility(true);
   await page.evaluate(() => window.nativeFixture.changeRoute('fixture-b', 'count=150&delay=80'));
   await page.waitForTimeout(1400);
   expect(await page.evaluate(() => window.nativeFixture.loaded)).toBe(12);
@@ -224,15 +229,6 @@ test('complete history status follows native controls becoming visible on resize
   expect(await page.evaluate(() => window.nativeFixture.requests)).toBe(1);
 });
 
-test('manual preparation remains available after an incompatible automatic layout', async ({ page }) => {
-  await openAutomatic(page, 'count=220&legacy=1&delay=80');
-  const saved = await anchor(page);
-  await expect(host(page)).toHaveAttribute('data-phase', 'incompatible');
-  await details(page);
-  await page.getByRole('button', { name: 'Prepare navigation', exact: true }).click();
-  await expect(host(page)).toHaveAttribute('data-phase', 'ready');
-  await expectAnchor(page, saved);
-});
 
 test('the page budget allows the last permitted page to complete but never starts an extra page', async ({ page }) => {
   for (const [count, outcome] of [[126, 'ready'], [127, 'limit']] as const) {
@@ -242,4 +238,56 @@ test('the page budget allows the last permitted page to complete but never start
     await page.waitForTimeout(400);
     expect(await page.evaluate(() => window.nativeFixture.requests)).toBe(21);
   }
+});
+
+
+test('continued interaction postpones recovery; repeated interruptions stop at the shared retry bound', async ({ page }) => {
+  await openAutomatic(page, 'count=900&delay=700');
+  for (let n = 0; n < 4; n++) {
+    await page.waitForFunction(() => window.nativeFixture.pending);
+    await page.keyboard.press('Shift');
+    await cleanTrigger(page);
+    await expect(host(page)).toHaveAttribute('data-phase', n < 3 ? 'recovering' : 'recovery-limit');
+    await page.waitForFunction(() => !window.nativeFixture.pending);
+    if (n === 0) {
+      const count = await page.evaluate(() => window.nativeFixture.requests);
+      for (let k = 0; k < 4; k++) {
+        await page.waitForTimeout(800);
+        await page.keyboard.press('Shift');
+        expect(await page.evaluate(() => window.nativeFixture.requests)).toBe(count);
+      }
+    }
+  }
+  const count = await page.evaluate(() => window.nativeFixture.requests);
+  await page.waitForTimeout(4000);
+  expect(await page.evaluate(() => window.nativeFixture.requests)).toBe(count);
+  await page.evaluate(() => window.nativeFixture.changeRoute('fixture-b', 'count=220&delay=80'));
+  await expect(host(page)).toHaveAttribute('data-phase', 'ready');
+});
+
+test('recovery waits for streaming to finish and uses the new reading anchor', async ({ page }) => {
+  await openAutomatic(page, 'count=400&delay=700');
+  await page.waitForFunction(() => window.nativeFixture.pending);
+  await page.keyboard.press('Shift');
+  await page.locator('main').evaluate(el => { el.dataset.streamActive = 'true'; });
+  await page.waitForFunction(() => !window.nativeFixture.pending);
+  const count = await page.evaluate(() => window.nativeFixture.requests);
+  await page.waitForTimeout(3500);
+  expect(await page.evaluate(() => window.nativeFixture.requests)).toBe(count);
+  const saved = await anchor(page);
+  await page.locator('main').evaluate(el => { delete el.dataset.streamActive; });
+  await expect(host(page)).toHaveAttribute('data-phase', 'ready');
+  await expectAnchor(page, saved);
+});
+
+
+test('an interrupted run cannot reset the twenty-page budget', async ({ page }) => {
+  await openAutomatic(page, 'count=127&ignore=1&delay=120');
+  await page.waitForFunction(() => window.nativeFixture.pending);
+  await page.keyboard.press('Shift');
+  await expect(host(page)).toHaveAttribute('data-phase', 'recovering');
+  await expect(host(page)).toHaveAttribute('data-phase', 'limit');
+  await cleanTrigger(page);
+  await page.waitForTimeout(3500);
+  expect(await page.evaluate(() => window.nativeFixture.requests)).toBe(21);
 });

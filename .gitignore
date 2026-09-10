@@ -5,3 +5,5 @@ playwright-report/
 .DS_Store
 *.local
 output/native-investigation/
+
+output/local-backups/

@@ -1,6 +1,6 @@
 import { conversationScroller, delay, nativeNavigation, readingPositionDrift, saveReadingPosition, viewportTop } from './dom';
 import type { HistoryState } from './shared';
-import type { Outcome, Progress } from './prepare';
+import type { Outcome } from './types';
 
 export type SeamlessOutcome = Outcome | 'incompatible' | 'layout-changed';
 export const AUTOMATIC_LIMITS = { duration: 60_000, pages: 20, pageWait: 12_000, nativeWait: 2_500 };
@@ -34,7 +34,7 @@ function exposeSentinel(scroller: HTMLElement): { element: HTMLElement; release(
 
 /** A separate automatic path: one native page trigger at a time, with no scroll/restore fallback. */
 export async function prepareSeamlessly(history: () => HistoryState, signal: AbortSignal,
-  onProgress: (progress: Progress) => void, limits = AUTOMATIC_LIMITS): Promise<SeamlessOutcome> {
+  limits = AUTOMATIC_LIMITS): Promise<SeamlessOutcome> {
   const initial = history();
   const start = performance.now();
   const position = saveReadingPosition();
@@ -66,12 +66,10 @@ export async function prepareSeamlessly(history: () => HistoryState, signal: Abo
     if (performance.now() - start >= limits.duration) return 'limit';
     return null;
   };
-  const report = (waiting = false) => onProgress({ phase: waiting ? 'waiting-native' : 'loading', pages: history().pages - initial.pages,
-    prompts: history().prompts, elapsed: performance.now() - start });
   try {
     while (true) {
       const problem = stateCheck(); if (problem) return problem;
-      const s = history(); report();
+      const s = history();
       if (s.pending) { await delay(40, signal); continue; }
       if (s.boundary === 'complete') {
         release();
@@ -79,7 +77,6 @@ export async function prepareSeamlessly(history: () => HistoryState, signal: Abo
         while (performance.now() < until) {
           const problem = stateCheck(); if (problem) return problem;
           if (history().pending || history().boundary !== 'complete') break;
-          report(true);
           const native = nativeNavigation();
           if (native.visible) return 'ready';
           await delay(80, signal);
@@ -96,7 +93,7 @@ export async function prepareSeamlessly(history: () => HistoryState, signal: Abo
       while (performance.now() < deadline) {
         await delay(20, signal);
         const problem = stateCheck(); if (problem) return problem;
-        const current = history(); report();
+        const current = history();
         if (current.pending || current.pages !== s.pages || current.boundary === 'complete') { started = true; release(); break; }
         const r = exposed.getBoundingClientRect();
         const top = viewportTop(scroller);
@@ -107,7 +104,7 @@ export async function prepareSeamlessly(history: () => HistoryState, signal: Abo
       while (history().pending || history().pages === s.pages) {
         const problem = stateCheck(); if (problem) return problem;
         if (performance.now() >= deadline) return 'stalled';
-        report(); await delay(40, signal);
+        await delay(40, signal);
       }
       // Host render/virtualizer commits can follow the fetch metadata acknowledgement.
       await delay(240, signal);

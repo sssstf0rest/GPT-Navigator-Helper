@@ -1,0 +1,45 @@
+{
+  "manifest_version": 3,
+  "name": "GPT Navigator Helper",
+  "version": "0.5.0",
+  "description": "Automatically prepare ChatGPT’s native navigator while preserving your reading position, with a simple status panel.",
+  "minimum_chrome_version": "111",
+  "action": {
+    "default_title": "GPT Navigator Helper",
+    "default_popup": "src/popup/index.html"
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "src/native/pageHook.iife.js"
+      ],
+      "matches": [
+        "https://chatgpt.com/*"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "js": [
+        "assets/content.ts-loader-BH9AbEtL.js"
+      ],
+      "matches": [
+        "https://chatgpt.com/*"
+      ],
+      "run_at": "document_idle",
+      "world": "ISOLATED"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "https://chatgpt.com/*"
+      ],
+      "resources": [
+        "assets/panelState-DomY_Dv0.js",
+        "assets/content.ts-hzguDJPo.js"
+      ],
+      "use_dynamic_url": false
+    }
+  ]
+}

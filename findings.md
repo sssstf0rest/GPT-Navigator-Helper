@@ -98,3 +98,29 @@ The user requested a feasibility assessment and best development methodology. In
 
 - Live single-page sentinel probe succeeded at full 1470px width: 1 native older-history request; maximum anchor drift 0px; 0 missing frames across 344 frames. scrollTop changed from 40,149 to 138,341 due to the host preserving the same visible message after prepending. Native controls remained absent because older history remained. Temporary styles and fetch observer were restored after six seconds. This validates one live mechanism invocation, not the full installed automatic extension lifecycle.
 - Final 0.3.0 verification passed 18 unit and 36 real-extension fixture tests. Verified early batching, automatic history loading, per-frame anchor stability, cancellation/cleanup, pause across SPA routes, simulated visibility in both script worlds, streaming deferral, manual fallback, and exact page-budget boundary behavior. Live single-page mechanism evidence and remaining full-extension live trials are separated in COMPATIBILITY.md.
+
+## Toolbar popup
+- Chrome action.default_popup and tabs.query/sendMessage provide a popup for the active tab without extra permissions. The popup uses only tab IDs; no URL/title permission is required. Documentation: https://developer.chrome.com/docs/extensions/reference/api/action and https://developer.chrome.com/docs/extensions/reference/api/tabs.
+- All injected helper DOM and styles are removed. A tab-owned snapshot service preserves preparation when the popup closes; a per-document token plus conversation/history key prevents stale commands after reload or navigation. Only this extension’s popup sender is accepted.
+- Version 0.4.0 full check passed 18 unit/40 real-extension browser tests. Popup document tests use real Chrome runtime/tab messaging; native toolbar-menu opening itself remains a user trial step. The production package includes the action popup and adds zero permissions. The automatic early history hook is unchanged byte-for-byte from the user-confirmed 0.3.0 build.
+
+## Automatic-only release
+- Version 0.5.0 removes manual preparation/restoration, pause state, and popup commands. The popup displays GPT NAVIGATOR HELPER, a brief intro, visibility, observed prompt count, and an absence reason. At four or fewer prompts, the native minimum explanation requires complete error-free history; partial and unknown counts are not mistaken for short conversations.
+- All 17 unit and 22 browser tests passed. Tests now focus on retained automatic behavior and read-only UI, including no buttons, legacy command rejection, unknown counts, three/four/five-prompt boundaries, active tabs, anchor stability, cancellation, errors, and limits. Light/dark minimal UI screenshots were inspected.
+
+## Publication readiness — 2026-09-10
+- Current 0.5.0 scope is suitably focused. No new manual controls, accounts, analytics, or backend are needed.
+- Privacy policy URL and accurate dashboard disclosures are needed: ChatGPT response processing is user-data handling even when local. Describe transient processing, retained in-memory metadata, ChatGPT-only access, no developer transmission/storage/analytics, and Limited Use compliance. Official sources: https://developer.chrome.com/docs/webstore/program-policies/privacy and https://developer.chrome.com/docs/webstore/program-policies/user-data-faq.
+- Product recommendation: bounded idle resumption after user interruption. Current pointer/keyboard/wheel/touch events abort preparation and retain the attempted context, so ordinary interaction can leave history incomplete until a new history load/reload. This is a usability gap, not a stated store requirement.
+- Product recommendation: replace unsupported causal claims about absent native navigation with an honest unavailable/unknown explanation; the five-prompt threshold is observed host behavior, not an extension guarantee.
+- Release verification should cover actual installed Chrome fresh install/update, SPA routes, foreground/background, 4/5/long conversations, streaming, unsupported layouts, and performance. The declared Chrome 111 minimum has not been established by current-version fixture tests.
+- Existing evidence: recorded 17 unit/22 production-extension fixture tests and user-confirmed prior releases; do not equate this with a full measured live 0.5.0 compatibility matrix.
+- Non-icon store assets: required 440x280 small promotional image and at least one 1280x800 or 640x400 screenshot. Existing small popup fixture images are not finished store assets. Source: https://developer.chrome.com/docs/webstore/images.
+- Recommend accurate single-purpose listing, independent-product wording, support URL, dedicated demo conversation, and reviewer steps (test-instructions tab is optional: https://developer.chrome.com/docs/webstore/cws-dashboard-test-instructions).
+- Current implementation remains uncommitted; final reviewed source/version and production ZIP should match before submission. No extension files changed in this assessment.
+
+## Recovery design
+- Resume only user/visibility interruption after 2.5 seconds of idle and compatible layout, at most three times per captured history context. Share the existing 60-second active-time and 20-page budgets across resumed attempts. Never retry network, cursor, layout-drift, incompatible-layout, or resource-limit failures automatically.
+- DevTools MCP connects to a separate blank browser and lacks extension-install tools. The user's previously authorized computer-use connection can inspect the actual signed-in Chrome and extension UI instead.
+
+- Release baseline: actual installed Google Chrome 152.0.7977.83 and bundled test Chromium 153.0.8010.12. Set the manifest minimum to 152 so the release does not advertise untested Chrome 111 support. This is a conservative support boundary, not evidence that older Chrome fails.

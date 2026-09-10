@@ -25,24 +25,28 @@ export const test = base.extend<{ context: BrowserContext; page: Page }>({
   },
   page: async ({ context }, use) => { const page = await context.newPage(); await use(page); },
 });
-export const host = (page: Page) => page.locator('#native-navigator-helper');
-export async function open(page: Page, query = 'count=220') {
-  await page.goto('https://chatgpt.com/c/fixture-boot?count=4');
-  await page.waitForFunction(() => window.nativeFixture?.ready);
-  await page.getByRole('button', { name: 'Open native navigator helper' }).click();
-  await page.getByRole('button', { name: 'Pause automatic preparation' }).click();
-  await page.evaluate(query => window.nativeFixture.changeRoute('fixture-a', query), query);
-  await page.waitForFunction(() => window.nativeFixture?.ready);
-  await expect(page.getByRole('region', { name: 'Native navigator helper' })).toBeVisible();
-  await expect(host(page).locator('pre')).toContainText('"bridge": "connected"');
-  await expect(host(page).locator('pre')).toContainText(query.includes('unknown=1') ? '"issue": "capture-unavailable"' : '"pagesObserved": 1');
-  await expect(host(page).locator('pre')).toContainText('"pendingRequests": 0');
-  await expect(page.getByRole('button', { name: 'Prepare navigation' })).toBeEnabled();
+const panels = new WeakMap<Page, Page>();
+export const panel = (page: Page): Page => panels.get(page)!;
+export const host = (page: Page) => panel(page).locator('#native-navigator-helper');
+export async function openPanel(page: Page): Promise<Page> {
+  if (panels.get(page) && !panels.get(page)!.isClosed()) return panels.get(page)!;
+  const cdp = await page.context().newCDPSession(page);
+  let origin = '';
+  cdp.on('Runtime.executionContextCreated', ({ context }) => {
+    if (context.origin.startsWith('chrome-extension://')) origin = context.origin;
+  });
+  await cdp.send('Runtime.enable');
+  await expect.poll(() => origin).not.toBe('');
+  await cdp.detach();
+  const popup = await page.context().newPage();
+  await popup.setViewportSize({ width: 320, height: 420 });
+  await page.bringToFront();
+  await popup.goto(`${origin}/src/popup/index.html`);
+  panels.set(page, popup);
+  await expect(host(page)).not.toHaveAttribute('data-phase', 'connecting');
+  return popup;
 }
-export async function prepare(page: Page, outcome = 'ready') {
-  await page.getByRole('button', { name: 'Prepare navigation' }).click();
-  await expect(host(page)).toHaveAttribute('data-phase', outcome);
-}
+
 export async function anchor(page: Page) {
   return page.locator('main [data-message-id]').evaluateAll(els => {
     const top = document.querySelector('main')!.getBoundingClientRect().top;

@@ -1,4 +1,4 @@
-import type { NativeState } from './prepare';
+import type { NativeState } from './types';
 
 const MESSAGE = '[data-message-author-role="user"], [data-message-author-role="assistant"]';
 export function messages(): HTMLElement[] {
@@ -50,7 +50,7 @@ function findAnchor(id: Identity): HTMLElement | null {
   return el.matches(MESSAGE) ? el : el.querySelector<HTMLElement>(MESSAGE);
 }
 export interface ReadingPosition {
-  identity: Identity | null; element: HTMLElement; offset: number; distanceFromBottom: number; scroller: HTMLElement;
+  identity: Identity | null; element: HTMLElement; offset: number; scroller: HTMLElement;
 }
 export function readingPositionDrift(position: ReadingPosition): number | null {
   if (!position.scroller.isConnected) return null;
@@ -66,22 +66,7 @@ export function saveReadingPosition(): ReadingPosition | null {
   const element = candidates.find(el => el.getBoundingClientRect().top >= top) ?? candidates[0];
   if (!element) return null;
   return { identity: identity(element), element, offset: element.getBoundingClientRect().top - top,
-    distanceFromBottom: scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop, scroller };
-}
-export function edgeIdentity(): string {
-  const first = messages()[0];
-  const id = first && identity(first);
-  return id ? `${id.attribute}:${id.value}` : '';
-}
-export function moveToHistoryEdge(): boolean {
-  const scroller = conversationScroller();
-  if (!scroller) return false;
-  const alreadyAtEdge = scroller.scrollTop <= 1;
-  scroller.scrollTo({ top: 0, behavior: 'instant' });
-  // A manual retry at an already loaded edge may need the existing scroll listener to run again.
-  // No wheel synthesis, click simulation, or repeated back-and-forth nudging.
-  if (alreadyAtEdge) scroller.dispatchEvent(new Event('scroll'));
-  return true;
+    scroller };
 }
 export function delay(ms: number, signal: AbortSignal): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -90,29 +75,4 @@ export function delay(ms: number, signal: AbortSignal): Promise<void> {
     const timer = setTimeout(() => { signal.removeEventListener('abort', abort); resolve(); }, ms);
     signal.addEventListener('abort', abort, { once: true });
   });
-}
-export async function restoreReadingPosition(position: ReadingPosition, signal: AbortSignal): Promise<boolean> {
-  signal.throwIfAborted();
-  const scroller = conversationScroller();
-  if (!scroller || scroller !== position.scroller || !scroller.isConnected) return false;
-  // Prepending history preserves distance from the bottom. This only seeds restoration;
-  // the saved message identity and offset must subsequently agree before reporting success.
-  scroller.scrollTo({ top: Math.max(0, scroller.scrollHeight - scroller.clientHeight - position.distanceFromBottom), behavior: 'instant' });
-  const deadline = performance.now() + 2_500;
-  let corrections = 0; let stable = 0;
-  while (performance.now() < deadline) {
-    await delay(160, signal);
-    const anchor = position.identity ? findAnchor(position.identity) : position.element.isConnected ? position.element : null;
-    if (!anchor) continue;
-    const r = anchor.getBoundingClientRect();
-    const delta = r.top - viewportTop(scroller) - position.offset;
-    if (Math.abs(delta) <= 3 && r.bottom > viewportTop(scroller) && r.top < viewportTop(scroller) + scroller.clientHeight) {
-      if (++stable >= 2) return true;
-    } else {
-      stable = 0;
-      if (corrections++ >= 3) return false;
-      scroller.scrollTo({ top: scroller.scrollTop + delta, behavior: 'instant' });
-    }
-  }
-  return false;
 }

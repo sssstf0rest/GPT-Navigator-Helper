@@ -78,7 +78,7 @@ export class HistoryChain {
     this.pages++;
     if (before && page.boundary !== 'complete' && (this.ids.size === priorSize || !page.cursor || page.cursor === before || this.cursors.has(page.cursor))) {
       // The previously verified chain still has earlier history. Keep that cursor
-      // so a later manual retry can recover from a transient repeated/empty page.
+      // so a later valid observation can recover from a transient repeated/empty page.
       this.issue = 'stalled'; return;
     }
     if (before) this.cursors.add(before);
