@@ -154,9 +154,12 @@ Run the prototype against a user-selected authenticated long ChatGPT conversatio
 - Prioritize required submission materials and recommended product hardening — complete.
 
 ## Release hardening — 2026-09-10
-1. Implement bounded idle recovery and honest status wording — in progress.
-2. Add recovery/lifecycle regressions and run full checks — pending.
-3. Test installed Chrome lifecycle and live conversations; establish supported Chrome baseline — pending.
-4. Package and document verified evidence and remaining limits — pending.
+1. Implement bounded idle recovery and honest status wording — complete.
+2. Add recovery/lifecycle regressions and run full checks — complete (20 unit / 25 browser cases).
+3. Test installed Chrome lifecycle and live conversations; establish supported Chrome baseline — partial live checks complete; remaining manual tests transferred to user at their request.
+4. Package and document verified evidence and remaining limits — complete.
 
 No publication, icons, commit, or push in this task. Existing uncommitted work is preserved.
+
+## 0.6.0 release packaging
+User authorizes packaging, committing, and pushing the newer release. Source is already in origin/seamless-preparation at 805501a; update stale documentation, verify production build/archive, then commit and push release artifacts. Chrome Web Store publication is not part of this step.

@@ -98,3 +98,9 @@
 - Sequential targeted checks passed: same-tab foreground recovery and hidden SPA navigation, and the shared twenty-page budget after interruption (2 cases, 29.1s). Across full/targeted runs all 25 current browser cases passed.
 - Actual Chrome update test: reloaded existing extension ID to 0.6.0 using Chrome's extension manager; existing ChatGPT tab showed reload guidance, then after page reload correctly showed one prompt and the revised short-history explanation. Toolbar Extensions-menu popup is verified on actual Chrome 152.
 - CUA adapter uses positional click IDs and named keys Escape/Return; invalid object-click, ESC, and Enter calls performed no action. A stale-state action was rejected and resolved by refreshing accessibility state.
+
+## 0.6.0 release package — 2026-09-10
+- User reports all manual checks completed on 0.5.0 and requests commit/push of the newer release. Found 0.6.0 source already committed and pushed at 805501a. Updated README and compatibility evidence without changing runtime code.
+- Re-ran 20 unit tests and production typecheck/build/manifest checks successfully. Prior 25 browser-case results apply to unchanged runtime code.
+- Packaged gpt-navigator-helper-0.6.0.zip: 11269 bytes, 8 files, root manifest, CRC and byte equality against dist verified. SHA-256 52459f1f7bc379d0d77f2679faf15241abfe18cc0fa22ee777cb9ad1cac7ec33.
+- Release commit/push authorized; no Chrome Web Store submission or further live browser testing performed.

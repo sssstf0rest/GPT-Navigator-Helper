@@ -124,3 +124,5 @@ The user requested a feasibility assessment and best development methodology. In
 - DevTools MCP connects to a separate blank browser and lacks extension-install tools. The user's previously authorized computer-use connection can inspect the actual signed-in Chrome and extension UI instead.
 
 - Release baseline: actual installed Google Chrome 152.0.7977.83 and bundled test Chromium 153.0.8010.12. Set the manifest minimum to 152 so the release does not advertise untested Chrome 111 support. This is a conservative support boundary, not evidence that older Chrome fails.
+
+- 0.6.0 release source was already on origin/seamless-preparation (805501a); the missing deliverables were the 0.6.0 archive and updated user/compatibility documentation. User manual testing is explicitly recorded as 0.5.0 evidence.
