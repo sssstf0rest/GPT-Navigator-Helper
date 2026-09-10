@@ -1,3 +1,5 @@
+<img src="icons/icon128.png" alt="GPT Navigator Helper icon" width="80" height="80">
+
 # GPT Navigator Helper
 
 Helps fix ChatGPT’s missing native navigator by automatically loading conversation history.
