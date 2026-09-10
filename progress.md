@@ -31,3 +31,7 @@ Version 0.6.1 includes automatic recovery, status wording, themed popup, privacy
 - Updated manifest, popup, README, submission copy, policy purpose, and store artwork to describe helping fix native navigation missing because history has not loaded. Preserved all availability limitations and technical/privacy explanations.
 - Bumped to 0.6.4 and regenerated the release and all five store PNGs/checksums. Build/typecheck passed; archive integrity and full dist equality passed. Only manifest and popup HTML differ from 0.6.3; runtime code is identical. All five store renders were inspected.
 - User authorized commit/push on main. A search initially referenced nonexistent src/popup/main.ts; located actual popup.ts and index.html without changing implementation code.
+
+## Light store artwork
+- Converted the promotional tiles and screenshots to white/light styling, including replacing the dark popup comparison with a single light panel composition. Regenerated all five PNGs and their checksums; updated the asset guide.
+- Reviewed every image visually and verified dimensions, byte counts, and SHA-256 values. Generator syntax passed. No extension code/package changes; version remains 0.6.4. User authorized commit/push.

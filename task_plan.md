@@ -25,3 +25,7 @@ No commit or push requested. Historical investigation details remain in Git hist
 ## Missing-navigator positioning — 0.6.4
 - [x] Align manifest, popup, README, policy purpose, submission text, and artwork copy with helping fix missing navigation caused by incomplete history.
 - [x] Rebuild, regenerate and inspect artwork, verify package, and prepare the authorized commit/push.
+
+## Light store artwork
+- [x] Change every listing image to a white/light composition, including popup captures; keep extension themes unchanged.
+- [x] Regenerate and inspect all five images, verify dimensions/checksums, and prepare the authorized commit/push.

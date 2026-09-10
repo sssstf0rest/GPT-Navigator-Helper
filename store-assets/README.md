@@ -1,13 +1,13 @@
 # GPT Navigator Helper — Chrome Web Store images
 
-Artwork for the 0.6.4 messaging and existing visual style. Uses the supplied SVG icon, Geist typography, and neutral white/charcoal surfaces.
+Artwork for the 0.6.4 messaging and existing visual style. Uses the supplied SVG icon, Geist typography, and white backgrounds, charcoal text, and light popup captures throughout.
 
 | Upload field | File | Size |
 | --- | --- | --- |
 | Small promotional tile (required) | 01-small-promo-440x280.png | 440 × 280 |
 | Marquee promotional tile (optional) | 02-marquee-1400x560.png | 1400 × 560 |
 | Screenshot 1 — automatic preparation | 03-screenshot-automatic-1280x800.png | 1280 × 800 |
-| Screenshot 2 — light and dark themes | 04-screenshot-themes-1280x800.png | 1280 × 800 |
+| Screenshot 2 — minimal light panel | 04-screenshot-themes-1280x800.png | 1280 × 800 |
 | Screenshot 3 — short-conversation status | 05-screenshot-status-1280x800.png | 1280 × 800 |
 
 Upload the PNG files individually to their matching fields. All exports are opaque 24-bit RGB PNGs, with square full-bleed canvases at the required dimensions. Only the final PNGs and their checksum manifest are kept in Git.
