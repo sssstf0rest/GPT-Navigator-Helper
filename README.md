@@ -2,7 +2,7 @@
 
 Automatically loads conversation history so ChatGPT’s built-in navigator can appear, while preserving your reading position.
 
-**Version 0.6.1 · branch `seamless-preparation`.** The extension is entirely automatic. Its read-only Chrome popup shows:
+**Version 0.6.1 · branch `main`.** The extension is entirely automatic. Its read-only Chrome popup shows:
 
 - **GPT Navigator Helper** and a brief introduction.
 - Whether the native navigator is visible.
@@ -15,7 +15,7 @@ There are no manual preparation, pause, resume, or stop buttons, and no extensio
 
 Requires **Chrome 152 or newer**. This is the tested release baseline; older Chrome versions have not been verified.
 
-1. Extract `output/releases/gpt-navigator-helper-0.6.1.zip`.
+1. Extract `releases/gpt-navigator-helper-0.6.1.zip`.
 2. In `chrome://extensions`, enable **Developer mode**, choose **Load unpacked**, and select the extracted folder containing `manifest.json`. Disable older copies of this extension.
 3. Reload ChatGPT tabs, then open a conversation in a wide desktop window. Preparation begins automatically when the page is ready and idle.
 4. To view status, click Chrome’s **Extensions** button and choose **GPT Navigator Helper**. You can pin it to the toolbar for direct access.
@@ -56,9 +56,9 @@ npx playwright install chromium
 npm run check
 ```
 
-Tests load the real production extension in disposable Chromium and serve synthetic ChatGPT-origin data from a local fixture. The fixture actually fetches older pages and virtualizes rendered messages. Tests cover automatic loading, reading anchors, cancellation, limits, route changes, the read-only popup, active tabs, unknown counts, and the five-prompt threshold. See [COMPATIBILITY.md](COMPATIBILITY.md) for evidence and limitations.
+Tests load the real production extension in disposable Chromium and serve synthetic ChatGPT-origin data from a local fixture. The fixture actually fetches older pages and virtualizes rendered messages. Tests cover automatic loading, reading anchors, cancellation, limits, route changes, the read-only popup, active tabs, unknown counts, and the five-prompt threshold. See [compatibility notes](docs/compatibility.md) for evidence and limitations.
 
-The manual controller and restoration code have been removed. `src/native/content.ts` owns automatic lifecycle, `seamless.ts` owns bounded loading, `panelState.ts` produces the read-only snapshot, and `src/popup/` renders it. Previous release artifacts are retained for reference.
+The manual controller and restoration code have been removed. `src/native/content.ts` owns automatic lifecycle, `seamless.ts` owns bounded loading, `panelState.ts` produces the read-only snapshot, and `src/popup/` renders it. Only the latest release ZIP is kept in `releases/`; older versions remain available in Git history.
 
 ## Changes in 0.6.0
 
@@ -72,3 +72,18 @@ The manual controller and restoration code have been removed. `src/native/conten
 Visual update only: neutral white/charcoal themes, softer borders, a compact visibility badge, and locally bundled Geist variable typography. The popup follows the active conversation theme; it uses the system theme while connecting. Automatic loading and recovery are unchanged from 0.6.0. All six existing popup browser tests passed, and light/dark/short-history screenshots were reviewed.
 
 Geist Latin variable font: @fontsource-variable/geist 5.3.0, copyright the Geist Project Authors, SIL Open Font License 1.1. The license is included in `public/licenses/Geist-OFL.txt` and the release package. Fonts load locally without third-party requests.
+
+## Repository layout
+
+- `src/` — extension source and bundled popup font.
+- `tests/` — unit tests, browser tests, and conversation fixtures.
+- `scripts/` — build verification and store-image generator.
+- `icons/` — icon SVG and PNG sizes.
+- `public/licenses/` — licenses copied into the extension build.
+- `docs/` — privacy policy for GitHub Pages and compatibility notes.
+- `store-assets/` — final listing images, upload guide, and checksums.
+- `releases/` — latest packaged extension and checksum.
+
+`dist/`, `output/`, test reports, and generated store-image sources are ignored. Regenerate the extension with `npm run build` and artwork with `node scripts/generate-store-assets.mjs`. The three small working-note files at the root are retained for the project’s planning workflow.
+
+[Privacy policy](docs/privacy-policy.html) · [Store image upload guide](store-assets/README.md)

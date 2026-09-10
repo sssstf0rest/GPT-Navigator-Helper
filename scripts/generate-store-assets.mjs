@@ -1,11 +1,12 @@
 import { chromium } from '@playwright/test';
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, copyFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 
 const root = process.cwd();
 const out = path.join(root, 'store-assets');
 await mkdir(path.join(out, 'sources'), { recursive: true });
+await copyFile('public/licenses/Geist-OFL.txt', path.join(out, 'sources/Geist-OFL.txt'));
 const server = spawn(process.execPath, ['tests/native-fixture/server.mjs'], { stdio: 'ignore' });
 let context;
 let browser;

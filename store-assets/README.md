@@ -10,11 +10,11 @@ Artwork for the 0.6.1 visual style. Uses the supplied SVG icon, Geist typography
 | Screenshot 2 — light and dark themes | 04-screenshot-themes-1280x800.png | 1280 × 800 |
 | Screenshot 3 — short-conversation status | 05-screenshot-status-1280x800.png | 1280 × 800 |
 
-Upload the PNG files individually to their matching fields. All exports are opaque 24-bit RGB PNGs, with square full-bleed canvases at the required dimensions. The ZIP is a convenient download bundle, not an extension upload package.
+Upload the PNG files individually to their matching fields. All exports are opaque 24-bit RGB PNGs, with square full-bleed canvases at the required dimensions. Only the final PNGs and their checksum manifest are kept in Git.
 
-Screenshot artwork contains actual production-extension popup captures with synthetic 30-prompt and four-prompt conversation data. These are promotional compositions of the popup, not screenshots of a live ChatGPT conversation. No private conversations are included. Source captures and self-contained HTML layouts are in `sources/`.
+Screenshot artwork contains actual production-extension popup captures with synthetic 30-prompt and four-prompt conversation data. These are promotional compositions of the popup, not screenshots of a live ChatGPT conversation. No private conversations are included. The generator recreates source captures and self-contained HTML layouts in the ignored `sources/` folder.
 
-The icon source is `icons/chatgpt-conversation-navigator.svg`; its shape is preserved. Geist is from @fontsource-variable/geist 5.3.0, licensed under SIL OFL 1.1, included at `sources/Geist-OFL.txt`.
+The icon source is `icons/chatgpt-conversation-navigator.svg`; its shape is preserved. Geist is from @fontsource-variable/geist 5.3.0, licensed under SIL OFL 1.1, included at `../public/licenses/Geist-OFL.txt` and copied to generated `sources/Geist-OFL.txt`.
 
 To regenerate from the repository root:
 

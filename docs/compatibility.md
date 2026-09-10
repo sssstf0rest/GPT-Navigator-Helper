@@ -1,6 +1,6 @@
 # GPT Navigator Helper compatibility
 
-Version 0.6.1, branch `seamless-preparation`.
+Version 0.6.1, branch `main`.
 
 ## Current scope
 
