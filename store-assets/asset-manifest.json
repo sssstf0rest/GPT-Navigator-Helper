@@ -3,35 +3,35 @@
     "file": "01-small-promo-440x280.png",
     "width": 440,
     "height": 280,
-    "bytes": 12556,
-    "sha256": "a1cf02bafcbc717846ebcf9c04830a7a8698f6ea205970aa5b3c81d07b8062f9"
+    "bytes": 12447,
+    "sha256": "7b0555b66abca7675323bd51e65e85a954881e3546a7eecf99c9f7f127e410a4"
   },
   {
     "file": "02-marquee-1400x560.png",
     "width": 1400,
     "height": 560,
-    "bytes": 41564,
-    "sha256": "287a244aa7d8507dac62a2ed6683727bb52be0114559aa7cee6db83fd385a83b"
+    "bytes": 41508,
+    "sha256": "0ee37dcf4e6b79ae666a8f0189e805b117fe5ef298d3221862a5e91d6518f4ff"
   },
   {
     "file": "03-screenshot-automatic-1280x800.png",
     "width": 1280,
     "height": 800,
-    "bytes": 75127,
-    "sha256": "c41a9d7d631906cd666506e2d30c1a8a84abcefb60242953d19b111f66349d2b"
+    "bytes": 72929,
+    "sha256": "62dc318c8ce0418ce3ac2810684f822f51a19c9af0c8f65f8c08910b61f7ac8a"
   },
   {
     "file": "04-screenshot-themes-1280x800.png",
     "width": 1280,
     "height": 800,
-    "bytes": 69779,
-    "sha256": "95d36c0d3c4586e346cd400a9f1187df473e8708a7fc755e57792a41108505ae"
+    "bytes": 71040,
+    "sha256": "31b5f8e536adadc026099e0e4379218536a9f5d30eb52c8c7ffacca2d7b2ca7e"
   },
   {
     "file": "05-screenshot-status-1280x800.png",
     "width": 1280,
     "height": 800,
-    "bytes": 78018,
-    "sha256": "836af35cea1c923f7eba2f34a6bc43aea7a59dbd49b8449046005f83bdc07abb"
+    "bytes": 78559,
+    "sha256": "209ed06e6892651c5b98424582a48b0fbe68e05e30e7c3ca33228615369cdb20"
   }
 ]

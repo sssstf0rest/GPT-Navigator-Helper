@@ -1,12 +1,12 @@
 GPT NAVIGATOR HELPER — CHROME WEB STORE SUBMISSION
-Release: 0.6.3 | Minimum Chrome: 152 | Prepared: 2026-09-10
+Release: 0.6.4 | Minimum Chrome: 152 | Prepared: 2026-09-10
 
 This is a publishing reference, not part of the extension package. Paste only the answer under the relevant field. Dashboard labels may change. Replace the privacy URL placeholder and supply your own account details before submitting. Distribution suggestions below are recommendations, not already configured settings.
 
 1. PACKAGE
 
-Upload: releases/gpt-navigator-helper-0.6.3.zip
-Version: 0.6.3
+Upload: releases/gpt-navigator-helper-0.6.4.zip
+Version: 0.6.4
 Minimum Chrome version: 152 (intentional)
 Manifest version: 3
 Upload the release ZIP, not a ZIP of the source repository.
@@ -17,15 +17,16 @@ Name:
 GPT Navigator Helper
 
 Short description (also in the manifest):
-Automatically prepare ChatGPT’s native navigator while preserving your reading position, with a simple status panel.
+Helps fix ChatGPT’s missing native navigator by automatically loading conversation history.
 
 Detailed description:
-GPT Navigator Helper automatically prepares conversation history so ChatGPT’s built-in prompt navigator can appear, while working to preserve your reading position.
+ChatGPT’s native prompt navigator can sometimes fail to appear because conversation history has not fully loaded. GPT Navigator Helper helps fix this loading issue automatically, while working to preserve your reading position.
 
-Open a conversation on chatgpt.com and let the helper prepare history in the background. Use ChatGPT’s own prompt markers to move through the conversation. There is no separate navigator or floating extension window.
+Open a conversation on chatgpt.com and let the helper load the history needed for native navigation in the background. Use ChatGPT’s own prompt markers to move through the conversation. There is no separate navigator or floating extension window.
 
 Features
-- Automatic history preparation when a supported conversation opens.
+- Helps restore a missing native navigator when incomplete history loading is the cause.
+- Runs automatically when a supported conversation opens.
 - Preparation yields when you interact with the page and can resume after you stop interacting.
 - Bounded recovery and loading limits prevent endless preparation attempts.
 - A compact toolbar popup shows native navigator visibility, observed prompt count, and a brief explanation when navigation is unavailable.
@@ -91,7 +92,7 @@ Optional; none supplied.
 4. PRIVACY PRACTICES — SINGLE PURPOSE
 
 Single purpose description:
-Automatically prepare the current ChatGPT conversation’s history so ChatGPT’s own prompt navigator can appear, and show preparation and navigator status in a read-only toolbar popup.
+Help fix a missing ChatGPT native prompt navigator caused by incomplete conversation history loading, by automatically loading supported history and showing navigator status in a read-only toolbar popup.
 
 5. PRIVACY PRACTICES — PERMISSION JUSTIFICATION
 
@@ -160,7 +161,7 @@ Choose automatic publication after approval or deferred publication according to
 
 9. FINAL UPLOAD CHECK
 
-- Upload the 0.6.3 release ZIP and confirm the dashboard shows version 0.6.3.
+- Upload the 0.6.4 release ZIP and confirm the dashboard shows version 0.6.4.
 - Confirm Chrome 152 minimum is retained.
 - Use the updated 128px icon above.
 - Replace the privacy URL placeholder.

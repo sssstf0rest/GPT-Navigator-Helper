@@ -5,8 +5,8 @@ const icons = { 16: 'icons/icon16.png', 32: 'icons/icon32.png', 48: 'icons/icon4
 export default defineManifest({
   manifest_version: 3,
   name: 'GPT Navigator Helper',
-  version: '0.6.3',
-  description: 'Automatically prepare ChatGPT’s native navigator while preserving your reading position, with a simple status panel.',
+  version: '0.6.4',
+  description: 'Helps fix ChatGPT’s missing native navigator by automatically loading conversation history.',
   minimum_chrome_version: '152',
   icons,
   action: { default_icon: icons, default_title: 'GPT Navigator Helper', default_popup: 'src/popup/index.html' },

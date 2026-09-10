@@ -1,6 +1,6 @@
 # GPT Navigator Helper — Chrome Web Store images
 
-Artwork for the 0.6.1 visual style. Uses the supplied SVG icon, Geist typography, and neutral white/charcoal surfaces.
+Artwork for the 0.6.4 messaging and existing visual style. Uses the supplied SVG icon, Geist typography, and neutral white/charcoal surfaces.
 
 | Upload field | File | Size |
 | --- | --- | --- |

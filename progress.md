@@ -26,3 +26,8 @@ Version 0.6.1 includes automatic recovery, status wording, themed popup, privacy
 - Added a plain-text submission reference covering copy, privacy explanations and category recommendations, asset paths, reviewer steps, distribution, and account fields. Public policy URL and personal publisher details remain explicit placeholders.
 - User authorized committing and pushing all current changes on main.
 - Verified package declarations, generator syntax, ZIP checksum/integrity, byte equality with dist, and clean diff formatting. Remote main matched local HEAD before the release commit. All release and submission changes are included in the authorized commit/push.
+
+## Missing-navigator positioning — 0.6.4
+- Updated manifest, popup, README, submission copy, policy purpose, and store artwork to describe helping fix native navigation missing because history has not loaded. Preserved all availability limitations and technical/privacy explanations.
+- Bumped to 0.6.4 and regenerated the release and all five store PNGs/checksums. Build/typecheck passed; archive integrity and full dist equality passed. Only manifest and popup HTML differ from 0.6.3; runtime code is identical. All five store renders were inspected.
+- User authorized commit/push on main. A search initially referenced nonexistent src/popup/main.ts; located actual popup.ts and index.html without changing implementation code.

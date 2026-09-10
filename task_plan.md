@@ -21,3 +21,7 @@ No commit or push requested. Historical investigation details remain in Git hist
 ## Publication reference and source release
 - [x] Prepare docs/chrome-web-store-submission.txt with listing, privacy, assets, reviewer instructions, and publisher-owned placeholders.
 - [x] Verify and prepare all current changes for the authorized commit/push on main.
+
+## Missing-navigator positioning — 0.6.4
+- [x] Align manifest, popup, README, policy purpose, submission text, and artwork copy with helping fix missing navigation caused by incomplete history.
+- [x] Rebuild, regenerate and inspect artwork, verify package, and prepare the authorized commit/push.

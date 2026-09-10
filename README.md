@@ -1,8 +1,8 @@
 # GPT Navigator Helper
 
-Automatically loads conversation history so ChatGPT’s built-in navigator can appear, while preserving your reading position.
+Helps fix cases where ChatGPT’s native navigator fails to appear because conversation history has not fully loaded. The helper loads history automatically while working to preserve your reading position.
 
-**Version 0.6.3 · branch `main`.** The extension is entirely automatic. Its read-only Chrome popup shows:
+**Version 0.6.4 · branch `main`.** The extension is entirely automatic. Its read-only Chrome popup shows:
 
 - **GPT Navigator Helper** and a brief introduction.
 - Whether the native navigator is visible.
@@ -15,7 +15,7 @@ There are no manual preparation, pause, resume, or stop buttons, and no extensio
 
 Requires **Chrome 152 or newer**. This is the tested release baseline; older Chrome versions have not been verified.
 
-1. Extract `releases/gpt-navigator-helper-0.6.3.zip`.
+1. Extract `releases/gpt-navigator-helper-0.6.4.zip`.
 2. In `chrome://extensions`, enable **Developer mode**, choose **Load unpacked**, and select the extracted folder containing `manifest.json`. Disable older copies of this extension.
 3. Reload ChatGPT tabs, then open a conversation in a wide desktop window. Preparation begins automatically when the page is ready and idle.
 4. To view status, click Chrome’s **Extensions** button and choose **GPT Navigator Helper**. You can pin it to the toolbar for direct access.
@@ -95,3 +95,7 @@ Fixed missing extension and toolbar icons by declaring the supplied 16, 32, 48, 
 ## Changes in 0.6.3
 
 Reduced transparent icon margins so the mark appears larger in Chrome. The 16/32/48px icons now use 1/2/3px minimum padding; the 128px icon uses 16px. All PNGs are rendered directly from the unchanged vector master. Regenerate them with `node scripts/generate-icons.mjs` after installing Playwright Chromium, then run `npm run build`. Automatic preparation and popup behavior are unchanged.
+
+## Changes in 0.6.4
+
+Rephrased the manifest, popup, listing, and promotional copy around helping fix a missing ChatGPT native navigator caused by incomplete history loading. Runtime behavior, privacy practices, and the Chrome 152 minimum are unchanged.

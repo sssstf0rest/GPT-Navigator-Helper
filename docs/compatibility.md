@@ -1,6 +1,6 @@
 # GPT Navigator Helper compatibility
 
-Version 0.6.3, branch `main`.
+Version 0.6.4, branch `main`.
 
 ## Current scope
 
@@ -56,3 +56,7 @@ Declared extension and toolbar PNGs at 16/32/48/128px. Production build/typechec
 ## 0.6.3 icon sizing
 
 Regenerated all four PNGs from the original SVG with reduced transparent margins. Native-size before/after renders were reviewed. Production typecheck/build, manifest icon paths, dimensions, and source equality passed. ZIP integrity and full byte equality against dist passed; only the manifest version and four PNGs differ from 0.6.2. No new live Chrome checks or runtime test reruns were performed for this asset-only change.
+
+## 0.6.4 description update
+
+Updated the manifest and popup descriptions to focus on helping fix missing native navigation caused by incomplete history loading. Build/typecheck and package checks passed. Compared with 0.6.3, only manifest.json and the popup HTML differ in the ZIP; all JavaScript, styles, fonts, licenses, and icons are byte-identical. Regenerated the store artwork using production popup captures with synthetic fixtures; all five renders were reviewed. No new live Chrome verification or runtime test rerun was needed for the copy-only change.
