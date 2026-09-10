@@ -11,7 +11,7 @@ async function open(page: import('@playwright/test').Page, query = 'count=30') {
 test('minimal popup has only the requested information and loading continues when closed', async ({ page }) => {
   await open(page, 'count=400&delay=900');
   expect(await panel(page).evaluate(() => chrome.action.getPopup({}))).toBe(panel(page).url());
-  await expect(panel(page).getByRole('heading')).toHaveText('GPT NAVIGATOR HELPER');
+  await expect(panel(page).getByRole('heading')).toHaveText('GPT Navigator Helper');
   await expect(panel(page).locator('button, details, input')).toHaveCount(0);
   await page.waitForFunction(() => window.nativeFixture.pending);
   await panel(page).close();

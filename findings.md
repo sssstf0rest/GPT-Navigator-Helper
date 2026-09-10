@@ -126,3 +126,15 @@ The user requested a feasibility assessment and best development methodology. In
 - Release baseline: actual installed Google Chrome 152.0.7977.83 and bundled test Chromium 153.0.8010.12. Set the manifest minimum to 152 so the release does not advertise untested Chrome 111 support. This is a conservative support boundary, not evidence that older Chrome fails.
 
 - 0.6.0 release source was already on origin/seamless-preparation (805501a); the missing deliverables were the 0.6.0 archive and updated user/compatibility documentation. User manual testing is explicitly recorded as 0.5.0 evidence.
+
+## Popup visual refresh — 0.6.1
+- ChatGPT-inspired neutral white/charcoal surfaces, title-case heading, compact status badge, and softly bordered fact rows. Geist Latin variable font is bundled locally from @fontsource-variable/geist 5.3.0, under SIL OFL; license included in public/licenses/Geist-OFL.txt and production package. No external font requests or additional controls. Initial popup theme follows OS before the active conversation snapshot arrives.
+
+## Store artwork requirements
+- Official Chrome image guidance requires a 440x280 small promo and at least one 1280x800 or 640x400 screenshot; optional marquee is 1400x560. Source: https://developer.chrome.com/docs/webstore/images (checked 2026-09-10).
+- Supplied icons include an editable monochrome SVG. Use deterministic HTML/SVG composition rather than generating a replacement mark. Plan three screenshot compositions using actual production popup captures and synthetic conversation data, with no private chats or fabricated controls.
+
+## Privacy policy page
+- Confirmed runtime transiently parses full history responses, retains metadata in tab memory, observes interaction timing without recording typed text, and can cause additional authenticated HTTPS requests to ChatGPT. Policy distinguishes these from developer collection and voluntary public GitHub support information.
+- Repository is public and Issues are enabled, so the existing project Issues URL is used as the contact route. No contact email or legal identity invented.
+- docs/privacy-policy.html is self-contained, with embedded SVG/Geist and font license, no JavaScript or external resources. Effective date 2026-09-10. Limited Use statement and external provider policies included. User will deploy; no remote publication performed.

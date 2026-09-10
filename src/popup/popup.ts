@@ -4,6 +4,7 @@ import type { PanelSnapshot } from '../native/panelState';
 
 const get = <T extends HTMLElement>(selector: string) => document.querySelector<T>(selector)!;
 const shell = get('main');
+shell.classList.toggle('dark', matchMedia('(prefers-color-scheme: dark)').matches);
 let reading = false;
 function render(state: PanelSnapshot): void {
   shell.dataset.phase = state.phase;

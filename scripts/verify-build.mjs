@@ -7,7 +7,7 @@ assert.deepEqual(manifest.host_permissions ?? [], []);
 assert.equal(manifest.content_scripts.length, 2);
 assert.equal(manifest.action?.default_popup, 'src/popup/index.html');
 const popup = await readFile(new URL(`../dist/${manifest.action.default_popup}`, import.meta.url), 'utf8');
-assert(popup.includes('GPT NAVIGATOR HELPER'));
+assert(popup.includes('GPT Navigator Helper'));
 assert(popup.includes('type="module"'));
 assert(!popup.includes('<button'));
 assert(!popup.includes('<details'));

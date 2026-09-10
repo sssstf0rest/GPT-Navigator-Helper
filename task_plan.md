@@ -163,3 +163,19 @@ No publication, icons, commit, or push in this task. Existing uncommitted work i
 
 ## 0.6.0 release packaging
 User authorizes packaging, committing, and pushing the newer release. Source is already in origin/seamless-preparation at 805501a; update stale documentation, verify production build/archive, then commit and push release artifacts. Chrome Web Store publication is not part of this step.
+
+## Popup visual refresh
+1. Restyle with neutral light/dark surfaces and locally bundled typography — complete.
+2. Run existing popup checks and inspect light/dark/short-history renders — complete (6 passed).
+3. Build a new local package and document the update — complete (0.6.1). No commit/push requested.
+
+## Chrome Web Store artwork
+1. Inspect supplied icon and verify current store dimensions — complete.
+2. Capture production popup with demo data; compose vector-led promo and screenshot layouts — complete.
+3. Inspect exports, verify dimensions, and deliver upload folder/ZIP — complete.
+Use the editable SVG directly to preserve the supplied mark. Keep typography/style consistent with 0.6.1; no runtime changes or publishing.
+
+## Privacy policy page
+1. Verify actual data handling and Chrome privacy requirements — complete.
+2. Create standalone docs/privacy-policy.html with matching light/dark style — complete.
+3. Verify layout, links, and absence of external resources — complete. User will deploy to GitHub Pages.

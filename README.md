@@ -2,9 +2,9 @@
 
 Automatically loads conversation history so ChatGPT’s built-in navigator can appear, while preserving your reading position.
 
-**Version 0.6.0 · branch `seamless-preparation`.** The extension is entirely automatic. Its read-only Chrome popup shows:
+**Version 0.6.1 · branch `seamless-preparation`.** The extension is entirely automatic. Its read-only Chrome popup shows:
 
-- **GPT NAVIGATOR HELPER** and a brief introduction.
+- **GPT Navigator Helper** and a brief introduction.
 - Whether the native navigator is visible.
 - How many prompts have been observed.
 - A brief explanation when the navigator is absent.
@@ -15,7 +15,7 @@ There are no manual preparation, pause, resume, or stop buttons, and no extensio
 
 Requires **Chrome 152 or newer**. This is the tested release baseline; older Chrome versions have not been verified.
 
-1. Extract `output/releases/gpt-navigator-helper-0.6.0.zip`.
+1. Extract `output/releases/gpt-navigator-helper-0.6.1.zip`.
 2. In `chrome://extensions`, enable **Developer mode**, choose **Load unpacked**, and select the extracted folder containing `manifest.json`. Disable older copies of this extension.
 3. Reload ChatGPT tabs, then open a conversation in a wide desktop window. Preparation begins automatically when the page is ready and idle.
 4. To view status, click Chrome’s **Extensions** button and choose **GPT Navigator Helper**. You can pin it to the toolbar for direct access.
@@ -66,3 +66,9 @@ The manual controller and restoration code have been removed. `src/native/conten
 - Clear recovery messages and a neutral explanation when history is complete but native navigation is unavailable.
 - Chrome 152 minimum aligned with the tested baseline.
 - 20 unit tests and 25 browser cases passed across full and targeted runs. Live 0.6.0 checks cover extension updating, the actual toolbar popup, reload guidance, and one/four-prompt conversations. The user completed the broader manual checklist on 0.5.0; that does not establish live recovery behavior in 0.6.0.
+
+## Changes in 0.6.1
+
+Visual update only: neutral white/charcoal themes, softer borders, a compact visibility badge, and locally bundled Geist variable typography. The popup follows the active conversation theme; it uses the system theme while connecting. Automatic loading and recovery are unchanged from 0.6.0. All six existing popup browser tests passed, and light/dark/short-history screenshots were reviewed.
+
+Geist Latin variable font: @fontsource-variable/geist 5.3.0, copyright the Geist Project Authors, SIL Open Font License 1.1. The license is included in `public/licenses/Geist-OFL.txt` and the release package. Fonts load locally without third-party requests.

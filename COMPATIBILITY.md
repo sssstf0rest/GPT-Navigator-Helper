@@ -1,6 +1,6 @@
 # GPT Navigator Helper compatibility
 
-Version 0.6.0, branch `seamless-preparation`.
+Version 0.6.1, branch `seamless-preparation`.
 
 ## Current scope
 
@@ -44,3 +44,7 @@ Earlier live evidence includes a bounded native pagination-sentinel test: one ol
 ## Live trial
 
 After loading 0.6.0 and reloading ChatGPT, open the extension from Chrome’s Extensions menu. Confirm the panel has only the requested information, compare three/four/five-prompt conversations, and verify the oldest native entry in a long chat. Closing the popup should leave automatic loading running; typing or scrolling should return control to the reader. After an interruption, stop interacting and verify automatic resumption without moving the reading position. If retry or loading limits are exhausted, reload to retry. No new prompts or shared links are required.
+
+## 0.6.1 visual verification
+
+Production typecheck/build and all six existing popup browser tests passed. Light, dark, and short-history renders were visually inspected. The automatic content bundle, early MAIN hook, and shared status logic are byte-identical to the 0.6.0 release. The popup font and its SIL OFL license are bundled locally. No additional live browser testing was performed; earlier live evidence remains scoped to its recorded versions.

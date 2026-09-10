@@ -3,7 +3,7 @@ import { defineManifest } from '@crxjs/vite-plugin';
 export default defineManifest({
   manifest_version: 3,
   name: 'GPT Navigator Helper',
-  version: '0.6.0',
+  version: '0.6.1',
   description: 'Automatically prepare ChatGPT’s native navigator while preserving your reading position, with a simple status panel.',
   minimum_chrome_version: '152',
   action: { default_title: 'GPT Navigator Helper', default_popup: 'src/popup/index.html' },

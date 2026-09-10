@@ -104,3 +104,20 @@
 - Re-ran 20 unit tests and production typecheck/build/manifest checks successfully. Prior 25 browser-case results apply to unchanged runtime code.
 - Packaged gpt-navigator-helper-0.6.0.zip: 11269 bytes, 8 files, root manifest, CRC and byte equality against dist verified. SHA-256 52459f1f7bc379d0d77f2679faf15241abfe18cc0fa22ee777cb9ad1cac7ec33.
 - Release commit/push authorized; no Chrome Web Store submission or further live browser testing performed.
+
+## 0.6.1 popup visual refresh
+- Replaced green tint/Avenir uppercase typography with neutral ChatGPT-inspired surfaces, a title-case heading, compact fact rows, and bundled Geist. Added font license to packaged public assets.
+- Production build/typecheck/manifest checks and all six popup tests passed (18s). Inspected light, dark, and short-history screenshots. Confirmed automatic content/MAIN/status bundles unchanged from 0.6.0.
+- Review caught overbroad version replacement in dependency constraints; restored dependency metadata from HEAD and changed only root package versions.
+- Packaged gpt-navigator-helper-0.6.1.zip: 43222 bytes, CRC/font/license/byte equality verified; SHA-256 badd48ce7faa8331cd950453e87ea6d0624c60ef055b05e3fcaff81adb1ccea1. No commit, push, or installed-browser changes.
+
+## Store artwork
+- Captured real production 0.6.1 popup with 30-prompt and four-prompt fixture conversations, in light and dark themes. Created required small promo, optional marquee, and three listing screenshot compositions from the exact SVG and bundled Geist.
+- Visually inspected all five renders. A fractional-height dark screenshot included a thin browser-background edge; switched source capture to transparent background so the composed card edge stays clean.
+
+- All five PNGs verified against exact store dimensions, opaque 24-bit RGB format, and SHA-256 manifest. Exported store-assets/gpt-navigator-helper-store-images.zip with upload guide. Editable HTML sources and actual popup captures retained, including Geist license. Runtime/manifest/icon source files were not changed.
+
+## Privacy policy HTML
+- Created docs/privacy-policy.html after reviewing source and official Chrome privacy/limited-use guidance. docs directory did not exist and was created.
+- Checked 1200px light and 390px dark layouts, font loading, eight policy sections, no horizontal overflow, no scripts, no page errors, and zero external resource requests. A speculative user-data policy path could not be opened; replaced it with the established official consolidated policy URL.
+- GitHub Issues contact verified enabled on the public repository. User will deploy GitHub Pages; no commit/push/deployment performed.
