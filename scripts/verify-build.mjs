@@ -2,6 +2,16 @@ import { readFile, readdir } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 const manifest = JSON.parse(await readFile(new URL('../dist/manifest.json', import.meta.url), 'utf8'));
 assert.equal(manifest.manifest_version, 3);
+const expectedIcons = Object.fromEntries([16, 32, 48, 128].map(size => [size, `icons/icon${size}.png`]));
+assert.deepEqual(manifest.icons, expectedIcons, 'Extension management/install icons must be declared');
+assert.deepEqual(manifest.action?.default_icon, expectedIcons, 'Toolbar icons must be declared');
+for (const [size, path] of Object.entries(expectedIcons)) {
+  const icon = await readFile(new URL(`../dist/${path}`, import.meta.url));
+  assert(icon.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])), `${path} must be PNG`);
+  assert.equal(icon.readUInt32BE(16), Number(size), `${path} width`);
+  assert.equal(icon.readUInt32BE(20), Number(size), `${path} height`);
+  assert(icon.equals(await readFile(new URL(`../${path}`, import.meta.url))), `${path} must match the supplied icon`);
+}
 assert.deepEqual(manifest.permissions ?? [], []);
 assert.deepEqual(manifest.host_permissions ?? [], []);
 assert.equal(manifest.content_scripts.length, 2);
@@ -21,4 +31,4 @@ assert(hook.includes('native-navigator-helper:v1'), 'MAIN hook must contain the 
 assert(!hook.includes('conversation-navigator:v1'), 'The legacy navigator must not be bundled');
 for (const asset of manifest.web_accessible_resources ?? []) assert.deepEqual(asset.matches, ['https://chatgpt.com/*']);
 assert(!(await readdir(new URL('../dist', import.meta.url))).includes('tests'));
-console.log('Verified MV3 package: ChatGPT-only, zero permissions, standalone early MAIN hook.');
+console.log('Verified MV3 package: ChatGPT-only, zero permissions, standalone early MAIN hook, packaged extension/toolbar icons.');

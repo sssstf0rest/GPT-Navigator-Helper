@@ -1,0 +1,186 @@
+GPT NAVIGATOR HELPER — CHROME WEB STORE SUBMISSION
+Release: 0.6.3 | Minimum Chrome: 152 | Prepared: 2026-09-10
+
+This is a publishing reference, not part of the extension package. Paste only the answer under the relevant field. Dashboard labels may change. Replace the privacy URL placeholder and supply your own account details before submitting. Distribution suggestions below are recommendations, not already configured settings.
+
+1. PACKAGE
+
+Upload: releases/gpt-navigator-helper-0.6.3.zip
+Version: 0.6.3
+Minimum Chrome version: 152 (intentional)
+Manifest version: 3
+Upload the release ZIP, not a ZIP of the source repository.
+
+2. STORE LISTING
+
+Name:
+GPT Navigator Helper
+
+Short description (also in the manifest):
+Automatically prepare ChatGPT’s native navigator while preserving your reading position, with a simple status panel.
+
+Detailed description:
+GPT Navigator Helper automatically prepares conversation history so ChatGPT’s built-in prompt navigator can appear, while working to preserve your reading position.
+
+Open a conversation on chatgpt.com and let the helper prepare history in the background. Use ChatGPT’s own prompt markers to move through the conversation. There is no separate navigator or floating extension window.
+
+Features
+- Automatic history preparation when a supported conversation opens.
+- Preparation yields when you interact with the page and can resume after you stop interacting.
+- Bounded recovery and loading limits prevent endless preparation attempts.
+- A compact toolbar popup shows native navigator visibility, observed prompt count, and a brief explanation when navigation is unavailable.
+- A clean light/dark popup with locally bundled typography.
+
+How to use
+1. Install the extension and reload any ChatGPT tabs that were already open.
+2. Open a conversation in a wide desktop window and allow preparation to run while the page is idle.
+3. Use ChatGPT’s native prompt markers when available.
+4. Open GPT Navigator Helper from Chrome’s Extensions menu, or pin it to your toolbar, to see its status.
+
+Requirements and limitations
+Requires Chrome 152 or newer and access to ChatGPT. The observed ChatGPT implementation requires at least five user prompts for its native navigator. Shorter conversations can correctly show no navigator. Availability also depends on ChatGPT’s layout, conversation mode, account conditions, and future site changes. Loading more history does not guarantee native navigation will be available. Preparation is designed to preserve your reading position, but ChatGPT’s own rendering can still cause movement.
+
+Privacy and site access
+The helper runs only on chatgpt.com. It temporarily processes conversation history responses, conversation addresses, page state, and interaction timing in your browser to prepare history and display status. It can enlarge ChatGPT’s own history requests and trigger its earlier-history loader. Conversation data is not uploaded to the developer. There is no developer backend, analytics, advertising, or persistent conversation storage. The helper does not record the text you type. Code and fonts are bundled locally.
+
+GPT Navigator Helper is an independent extension and is not affiliated with or endorsed by OpenAI.
+
+Language:
+English
+
+Category:
+Choose the closest available productivity/workflow category in the dashboard.
+
+Mature content:
+No. The extension does not provide or promote mature content.
+
+Homepage URL:
+https://github.com/sssstf0rest/GPT-Navigator-Helper
+
+Support URL:
+https://github.com/sssstf0rest/GPT-Navigator-Helper/issues
+
+Privacy policy URL:
+[PASTE YOUR EXISTING PUBLIC GITHUB PAGES PRIVACY POLICY URL HERE]
+Use the publicly accessible HTML page, not the GitHub source-file view. Check that it opens without signing in.
+
+Official/verified publisher URL:
+Optional. Select only a domain/site you actually control and have verified. Do not select chatgpt.com or openai.com.
+
+3. GRAPHIC ASSETS
+
+Store icon, 128 x 128:
+icons/icon128.png
+
+Small promotional tile, 440 x 280:
+store-assets/01-small-promo-440x280.png
+
+Optional marquee promotional tile, 1400 x 560:
+store-assets/02-marquee-1400x560.png
+
+Screenshots, 1280 x 800:
+store-assets/03-screenshot-automatic-1280x800.png
+store-assets/04-screenshot-themes-1280x800.png
+store-assets/05-screenshot-status-1280x800.png
+
+Upload PNGs individually. Existing screenshot artwork uses real popup renders with synthetic conversations; it does not show a live ChatGPT page. Recommended additional image: a non-private ChatGPT conversation showing the native navigator and helper popup together. Do not include private conversation content or imply unavailable functionality.
+
+Promotional video:
+Optional; none supplied.
+
+4. PRIVACY PRACTICES — SINGLE PURPOSE
+
+Single purpose description:
+Automatically prepare the current ChatGPT conversation’s history so ChatGPT’s own prompt navigator can appear, and show preparation and navigator status in a read-only toolbar popup.
+
+5. PRIVACY PRACTICES — PERMISSION JUSTIFICATION
+
+ChatGPT site access / host access justification (if the dashboard asks):
+Access to https://chatgpt.com/* is required to observe the current conversation’s history-loading state and native navigator, expand recognized initial history requests, and trigger ChatGPT’s existing earlier-history loader. The extension also reads layout, theme, prompt counts, and interaction timing to preserve the reading position, yield during interaction, and display status. Access is limited to ChatGPT and used only for these features.
+
+Manifest note for the publisher:
+Site access comes from content_scripts.matches. There are no additional permissions or host_permissions entries. Do not claim that the extension has no website access. Do not add tabs, browsing history, cookies, storage, scripting, or webRequest permissions merely to match a dashboard field; none is declared by this release. The popup uses permitted tabs querying/messaging without the sensitive tabs permission.
+
+Remote code answer:
+No, I am not using remote code.
+
+Remote code explanation, if requested:
+All executable extension code and fonts are included in the uploaded package. ChatGPT history responses are processed as data and are not executed as extension code. The extension does not download executable scripts, evaluate remote code, or import private ChatGPT application modules.
+
+6. PRIVACY PRACTICES — DATA USAGE
+
+Do not choose “no user data handled” solely because processing is local. Chrome’s guidance explicitly requires disclosure of local handling too.
+
+Recommended category mapping for this implementation (based on actual processing; check the dashboard’s definitions before confirming):
+- Website content: select. Copies of ChatGPT history responses and page information are temporarily processed.
+- Personal communications: select for the conversation prompts and replies processed within those responses.
+- Web history: select for the current ChatGPT conversation address and navigation state. This does not mean the extension reads browser-wide history or has the history API permission.
+- User activity: select for typing, pointer, touch, and scroll event timing used to yield/resume preparation. Typed text is not recorded.
+
+The extension does not intentionally extract identity/contact profiles, health records, financial/payment information, authentication secrets, or location. However, arbitrary conversation text may contain sensitive information. The four categories above are an implementation-based recommendation, not a Google ruling that other categories can never apply. If the dashboard explicitly includes incidental sensitive content in its definitions, disclose that handling rather than treating it as excluded. No passwords, cookies, or tokens are extracted by the helper; ChatGPT’s own session handles its history requests.
+
+Data-use explanation, if a free-text field or reviewer clarification is available:
+Processing occurs transiently in the user’s ChatGPT tab. History responses can contain prompts, replies, and personal information the user included. The helper extracts identifiers, counts, pagination boundaries, and completion state; prompt/reply text is not retained in tracking state or sent to the popup. It also reads the current conversation address, layout/theme, navigator state, and interaction timing. Metadata stays in tab memory. No conversation content or derived metadata is sent to developer servers or written to persistent extension storage. Requests to retrieve history remain between the browser and ChatGPT. There is no analytics, advertising, profiling, or AI-model training use.
+
+Data-use certifications:
+The implementation supports certifying that data is not sold or transferred outside approved uses; is not used or transferred for purposes unrelated to the extension’s single purpose; and is not used or transferred to determine creditworthiness or for lending purposes. Read and confirm the dashboard’s exact certification wording personally.
+
+Privacy policy:
+Paste your public URL in the privacy policy field. Keep answers consistent with that page. The policy already describes local processing, ChatGPT requests, retention, support, and Limited Use.
+
+7. TEST INSTRUCTIONS FOR REVIEWERS
+
+Paste:
+GPT Navigator Helper requires Chrome 152 or newer, a ChatGPT account, and a desktop browser window at least 1024 CSS pixels wide. There is no separate helper account, subscription, API key, or extension login.
+
+1. Install the extension, sign in to https://chatgpt.com using your own test account, and reload existing ChatGPT tabs.
+2. Open or create a non-private test conversation with at least five user prompts and completed replies. A longer conversation with initially unloaded older history is useful for testing preparation.
+3. Keep the tab visible and avoid typing/scrolling while preparation runs. The helper prepares supported history automatically; no manual button is needed.
+4. Open GPT Navigator Helper from Chrome’s Extensions menu. The popup shows native navigator visibility, observed prompt count, and an explanation when unavailable. There are no preparation or pause controls.
+5. When ChatGPT exposes its native navigator, use its prompt markers on the right side of the conversation. The extension does not supply a separate navigator.
+6. As a negative test, open a conversation with four or fewer prompts. Once complete history is confirmed, an absent navigator and short-conversation explanation are expected.
+7. In a long conversation still preparing, interact with the page to interrupt preparation, then leave it idle. Eligible preparation can resume after at least 2.5 seconds, subject to its bounded recovery budget.
+
+Native navigator availability depends on ChatGPT’s own eligibility and layout. Complete history alone does not force it to appear. Background tabs, active responses, narrow layouts, message deep links, loading errors, and exhausted limits can defer or prevent preparation. Reloading starts a fresh attempt. No private conversation links or developer account credentials are required for these steps.
+
+Credentials field:
+No extension-specific credentials. If review requests additional access, follow the dashboard’s private reviewer-access process using a dedicated test account; never publish personal credentials or put them in this file.
+
+8. DISTRIBUTION AND PUBLISHER DETAILS
+
+Suggested distribution:
+Free; Public; all supported regions unless you have a specific regional restriction.
+These are publisher choices; confirm them in the dashboard.
+
+Publisher account fields:
+Provide your own developer display name, verified contact email, and any identity/address or trader-status information the dashboard requires. These cannot be inferred from the source code. Complete developer registration and enable 2-Step Verification.
+
+Release timing:
+Choose automatic publication after approval or deferred publication according to your preference. Uploading does not itself mean approval or publication.
+
+9. FINAL UPLOAD CHECK
+
+- Upload the 0.6.3 release ZIP and confirm the dashboard shows version 0.6.3.
+- Confirm Chrome 152 minimum is retained.
+- Use the updated 128px icon above.
+- Replace the privacy URL placeholder.
+- Add listing text, language/category, imagery, support URL, and test instructions.
+- Review privacy selections and certification wording against the actual implementation.
+- Choose distribution and publication timing, then submit for review.
+
+10. OFFICIAL REFERENCES
+
+Publication workflow:
+https://developer.chrome.com/docs/webstore/publish
+Store listing fields:
+https://developer.chrome.com/docs/webstore/cws-dashboard-listing
+Image requirements:
+https://developer.chrome.com/docs/webstore/images
+Privacy fields:
+https://developer.chrome.com/docs/webstore/cws-dashboard-privacy
+Local data handling and disclosure:
+https://developer.chrome.com/docs/webstore/program-policies/user-data-faq
+Developer registration:
+https://developer.chrome.com/docs/webstore/register
+Developer policies and 2-Step Verification:
+https://developer.chrome.com/docs/webstore/program-policies/policies

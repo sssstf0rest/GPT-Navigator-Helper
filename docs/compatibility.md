@@ -1,6 +1,6 @@
 # GPT Navigator Helper compatibility
 
-Version 0.6.1, branch `main`.
+Version 0.6.3, branch `main`.
 
 ## Current scope
 
@@ -48,3 +48,11 @@ After loading 0.6.0 and reloading ChatGPT, open the extension from Chrome’s Ex
 ## 0.6.1 visual verification
 
 Production typecheck/build and all six existing popup browser tests passed. Light, dark, and short-history renders were visually inspected. The automatic content bundle, early MAIN hook, and shared status logic are byte-identical to the 0.6.0 release. The popup font and its SIL OFL license are bundled locally. No additional live browser testing was performed; earlier live evidence remains scoped to its recorded versions.
+
+## 0.6.2 icon integration
+
+Declared extension and toolbar PNGs at 16/32/48/128px. Production build/typecheck and icon-path/dimension/source-equality checks passed. The release ZIP was verified to contain all declared icons. All existing non-manifest files are byte-identical to 0.6.1; only the manifest and four added icon assets differ. No additional live-browser verification was performed for this packaging fix.
+
+## 0.6.3 icon sizing
+
+Regenerated all four PNGs from the original SVG with reduced transparent margins. Native-size before/after renders were reviewed. Production typecheck/build, manifest icon paths, dimensions, and source equality passed. ZIP integrity and full byte equality against dist passed; only the manifest version and four PNGs differ from 0.6.2. No new live Chrome checks or runtime test reruns were performed for this asset-only change.
