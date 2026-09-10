@@ -5,7 +5,7 @@
 <h1 align="center">GPT Navigator Helper</h1>
 
 <p align="center">
-  Helps fix ChatGPT’s missing native navigator by automatically loading conversation history.
+  A Chrome extension that helps fix ChatGPT’s missing native navigator by automatically loading conversation history.
 </p>
 
 ## Install from Chrome Web Store
