@@ -10,7 +10,7 @@
 
 ## Install from Chrome Web Store
 
-**Pending approval.** The store link will be added here once the extension is available.
+Install directly from the [Chrome Web Store](https://chromewebstore.google.com/detail/gpt-navigator-helper/bpbajpcoifjncefjgbnnafkcgmjdcdli)
 
 <!--
 ## Install (development)
